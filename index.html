@@ -1,0 +1,2685 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="1HqYKzQww4lG3tz7SKZuot">
+<head data-page-node-id="yzMhGHxXiGDnLoQBbpYnyy">
+<meta charset="UTF-8" data-page-node-id="d6mFYAnDYXqyHpx0w0Lyvg">
+<meta name="viewport" content="width=device-width, initial-scale=1" data-page-node-id="BBqf3AMj0zqZmN2ygSEDpq">
+<title>小型资源站</title>
+<style>
+  :root{
+    --bg:#f6f7fb;
+    --surface:#ffffff;
+    --surface-2:#fafbfd;
+    --border:#e6e8ef;
+    --border-strong:#d6dae6;
+    --text:#1a1d29;
+    --text-2:#4b5162;
+    --muted:#8a90a2;
+    --accent:#4f46e5;
+    --accent-hover:#4338ca;
+    --accent-soft:#eef2ff;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.06);
+    --shadow-lg:0 12px 40px rgba(16,24,40,.16);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:15px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
+  .container{width:100%;max-width:1180px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- Header ---------- */
+  .site-header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,.82);
+    backdrop-filter:saturate(180%) blur(12px);
+    border-bottom:1px solid var(--border);
+  }
+  .header-inner{display:flex;align-items:center;gap:16px;height:64px;}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:.2px;}
+  .logo-mark{
+    width:32px;height:32px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:16px;
+    box-shadow:0 4px 12px rgba(99,102,241,.35);
+  }
+  .header-spacer{flex:1;}
+  .header-actions{display:flex;align-items:center;gap:12px;}
+
+  .header-note{font-size:13px;color:var(--muted);}
+  .header-note b{color:var(--text);font-weight:650;}
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;padding:56px 0 32px;overflow:hidden;}
+  .hero::before{
+    content:"";position:absolute;top:-140px;right:-80px;width:420px;height:420px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%,rgba(99,102,241,.16),rgba(139,92,246,.06) 60%,transparent 70%);
+  }
+  .hero-inner{position:relative;}
+  .hero h1{
+    margin:0 0 10px;font-size:34px;line-height:1.25;font-weight:750;letter-spacing:-.4px;
+  }
+  .hero h1 span{
+    background:linear-gradient(120deg,#4f46e5,#8b5cf6 55%,#0ea5e9);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p{margin:0;color:var(--muted);max-width:560px;}
+  .stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:26px;}
+  .stat b{display:block;font-size:22px;font-weight:700;letter-spacing:-.2px;}
+  .stat span{font-size:13px;color:var(--muted);}
+
+  /* ---------- Toolbar ---------- */
+  .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:26px 0 18px;}
+  .search{
+    position:relative;flex:1;min-width:240px;
+  }
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);}
+  .search input{
+    width:100%;height:42px;padding:0 40px 0 38px;border-radius:11px;
+    border:1px solid var(--border-strong);background:var(--surface);outline:none;transition:.16s;
+  }
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.13);}
+  .search kbd{
+    position:absolute;right:11px;top:50%;transform:translateY(-50%);
+    font-size:11px;color:var(--muted);border:1px solid var(--border-strong);
+    border-radius:5px;padding:1px 6px;background:var(--surface-2);font-family:inherit;
+  }
+  select.sort{
+    height:42px;padding:0 12px;border-radius:11px;border:1px solid var(--border-strong);
+    background:var(--surface);outline:none;cursor:pointer;
+  }
+  select.sort:focus{border-color:var(--accent);}
+
+  /* ---------- Category chips ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
+  .chip{
+    padding:7px 14px;border-radius:999px;font-size:13.5px;
+    border:1px solid var(--border-strong);background:var(--surface);color:var(--text-2);transition:.16s;
+  }
+  .chip:hover{border-color:var(--accent);color:var(--accent);}
+  .chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .chip.zero{opacity:.55;}
+  .chip .count{opacity:.6;margin-left:5px;font-size:12px;}
+
+  /* ---------- Grid ---------- */
+  .grid{
+    display:grid;gap:16px;padding-bottom:60px;
+    grid-template-columns:repeat(auto-fill,minmax(272px,1fr));
+  }
+  .card{
+    display:flex;flex-direction:column;gap:10px;
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px;box-shadow:var(--shadow);transition:.18s ease;position:relative;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--border-strong);}
+  .card-top{display:flex;gap:12px;align-items:flex-start;}
+  .icon{
+    width:42px;height:42px;flex:none;border-radius:11px;display:grid;place-items:center;
+    font-size:20px;background:var(--accent-soft);color:var(--accent);
+  }
+  .icon.type{
+    font-size:10.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .icon.img{background:#f4f5f9;padding:5px;}
+  .icon.img img{width:100%;height:100%;object-fit:contain;border-radius:7px;display:block;}
+  .more{margin-top:-2px;}
+  .more summary{
+    list-style:none;cursor:pointer;font-size:12.5px;color:var(--accent);
+    display:inline-flex;align-items:center;gap:4px;padding:2px 0;user-select:none;
+  }
+  .more summary::-webkit-details-marker{display:none;}
+  .more summary::before{content:"▸";font-size:10px;transition:.15s;}
+  .more[open] summary::before{transform:rotate(90deg);}
+  .more summary:hover{text-decoration:underline;}
+  .more-list{display:grid;gap:4px;margin-top:8px;}
+  .more-list a{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    font-size:12.5px;color:var(--text-2);padding:5px 9px;border-radius:8px;
+    background:var(--surface-2);border:1px solid var(--border);transition:.14s;
+  }
+  .more-list a:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+  .more-list a em{font-style:normal;color:var(--muted);font-size:11.5px;flex:none;}
+  .type-preview{
+    display:flex;align-items:center;gap:9px;margin-top:9px;
+    font-size:12.5px;color:var(--muted);
+  }
+  .type-preview .icon{width:34px;height:34px;border-radius:9px;}
+  .card-title{font-weight:650;font-size:15.5px;line-height:1.4;word-break:break-word;}
+  .card-cat{font-size:12px;color:var(--muted);margin-top:2px;}
+  .card-desc{
+    color:var(--text-2);font-size:13.5px;line-height:1.6;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    min-height:1.6em;
+  }
+  .tags{display:flex;flex-wrap:wrap;gap:6px;}
+  .tag{
+    font-size:11.5px;padding:2px 8px;border-radius:6px;
+    background:var(--surface-2);border:1px solid var(--border);color:var(--muted);
+  }
+  .card-foot{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    margin-top:auto;padding-top:12px;border-top:1px solid var(--border);
+  }
+  .meta{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;}
+  .card-actions{display:flex;gap:2px;}
+  .icon-btn{
+    width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--muted);transition:.15s;
+  }
+  .icon-btn:hover{background:var(--surface-2);color:var(--accent);}
+
+  /* ---------- Empty ---------- */
+  .empty{
+    grid-column:1/-1;text-align:center;padding:70px 20px;
+    background:var(--surface);border:1px dashed var(--border-strong);border-radius:var(--radius);
+  }
+  .empty .e-icon{font-size:40px;}
+  .empty h3{margin:12px 0 6px;font-size:17px;}
+  .empty p{margin:0 0 18px;color:var(--muted);font-size:14px;}
+
+  footer{
+    border-top:1px solid var(--border);background:var(--surface);
+    padding:22px 0;color:var(--muted);font-size:13px;
+  }
+  .foot-inner{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;}
+
+  @media (max-width:640px){
+    .hero{padding:36px 0 22px;}
+    .hero h1{font-size:26px;}
+    .container{padding:0 16px;}
+    .row2{grid-template-columns:1fr;}
+    .hide-sm{display:none;}
+  }
+</style>
+</head>
+<body data-page-node-id="mRCWkTdENFPVkzot5cRSV2">
+
+<header class="site-header" data-page-node-id="QlUKYFmOGm7yFMSY2YqW7K">
+  <div class="container header-inner" data-page-node-id="Rtxqv6jrTOIn0xbCwDBvLx">
+    <div class="logo" data-page-node-id="fmf8CFtXR8shtzOrSsEQY2">
+      <div class="logo-mark" data-page-node-id="xBxzlAcKC7DK9hW7MlELut">◆</div>
+      <span data-page-node-id="eJaDu5EDzDNDWZPF5TdvwR">小型资源站</span>
+    </div>
+    <div class="header-spacer" data-page-node-id="ge1T65gE2IVHbsj2cJdYaL"></div>
+    <div class="header-actions" data-page-node-id="UPTLMu2UmHm3Y0U8qn1gjr">
+      <span class="header-note">共 <b id="headCount">0</b> 款资源</span>
+    </div>
+  </div>
+</header>
+
+<main data-page-node-id="gKAL36eh0OZoGIhLNxGdyP">
+  <section class="hero" data-page-node-id="BI5EzCcX5ZFMacbonykwkc">
+    <div class="container hero-inner" data-page-node-id="RgEO3KYyAX3OFWBmKS5LSq">
+      <h1 data-page-node-id="Ii9C3mcEWP5OfYeDlEathf">把好东西，<span data-page-node-id="BhYnxj7SDmLpI1tUvExIUy">收进一个地方</span></h1>
+      <p data-page-node-id="d5ZPj6Y8aCn1xHnFcFKmrm">装机必备、教学辅助、系统工具……统一归档，点开即下。</p>
+      <div class="stats" data-page-node-id="DlotfIVYzUNz2FD2UPwMhF">
+        <div class="stat" data-page-node-id="yrNHnQko4RfzE3pzb0a04d"><b id="statTotal" data-page-node-id="sFg37boFPtc8f80TCuGt8x">0</b><span data-page-node-id="IGaCu6fzB5Ki2ngtwLoHVH">资源总数</span></div>
+        <div class="stat" data-page-node-id="1Z9ZU3ZhUfvnZyiC2ggbDz"><b id="statCat" data-page-node-id="Nk3RPAWeKmJfZI87OSElaK">0</b><span data-page-node-id="WU0qUeKDmyoke7hwvQDYX5">资源分类</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container" data-page-node-id="Xdfm8i33ziKVKtaAgFRYNm">
+    <div class="toolbar" data-page-node-id="5BKBhy5q2XYVhGm3bcnZiV">
+      <div class="search" data-page-node-id="5c3oKVWOH1CxNOBjAXTEXp">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" data-page-node-id="MqgPEloF1Hve7B8alFUAkP"><circle cx="11" cy="11" r="7" data-page-node-id="0KAxwDzjzvyTQ2nVCFteoq"/><path d="m20 20-3.5-3.5" data-page-node-id="l50ZDOB3y9xfiLoIlZhQlI"/></svg>
+        <input id="search" type="text" placeholder="搜索标题、描述或标签…" autocomplete="off" data-page-node-id="p8E7aBlRSDvwnIX7NtTI5T">
+        <kbd data-page-node-id="gLnrreqbBOaXAvp7SEum5T">/</kbd>
+      </div>
+      <select class="sort" id="sort" data-page-node-id="LIDWxmnEE5IeH7pppT19iZ">
+        <option value="new" data-page-node-id="tyNyBnUwiTEh7W2cDHXe4L">默认排序</option>
+        <option value="name" data-page-node-id="60AH83hqFzQHDzJDEoMQRw">按名称</option>
+        <option value="size" data-page-node-id="iTnlgUgU18wDMjNyxVnLX8">按大小</option>
+        <option value="cat" data-page-node-id="JQnYynQtJRtF3BjSSWapq6">按分类</option>
+      </select>
+    </div>
+
+    <nav class="chips" id="chips" data-page-node-id="tKc88B3IEAjIRzLVHgWHjx"></nav>
+
+    <section class="grid" id="grid" data-page-node-id="oOJUYUegcv6cM567Ei8tEO"></section>
+  </div>
+</main>
+
+<footer data-page-node-id="l9d9bqOJMjlPTmfzS96fUB">
+  <div class="container foot-inner" data-page-node-id="jJjQbp0UVFqBziDJVZeqrE">
+    <span data-page-node-id="eoamyv4ypL6zXNiyb5ZvTu">资源随站点更新 · 收录于 2026-09-08</span>
+    <span data-page-node-id="RqPFqEB5DZVXpTO07KvegI">按 <kbd data-page-node-id="9Nc7dlvY3N1fmwDhayOxNp">/</kbd> 快速搜索</span>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   资源数据：全部写在本文件里，页面不提供在线录入
+   新增一款软件 = 往 SOFTWARE_SEED 里加一个对象，照下面模板抄：
+
+   {
+     id: 'sw-41',                    // 唯一标识，别重复
+     title: '软件名',
+     desc: '一句话简介（卡片上显示）',
+     detail: '完整介绍（鼠标悬停标题显示）',
+     category: '系统工具',            // 系统工具 / 教学软件 / 教学辅助 / 其他工具
+     size: '12.5 MB',
+     url: 'https://.../xxx.exe',      // 主下载直链
+     icon: 'https://.../icon.png',    // 图标图片直链（留空则按文件后缀自动生成徽标）
+     tags: ['v1.2.3', 'Windows 10/11'],
+     more: [                          // 可选：官网 / GitHub / 其它版本
+       { label: '官方网站', url: 'https://...' },
+       { label: 'Windows x64 便携版', url: 'https://...', size: '10 MB', note: '备注' }
+     ],
+     date: '2026-09-08'
+   }
+
+   需要增删软件时，把安装包或一个网页发过来即可，我直接改这个数组。
+   ========================================================= */
+
+/* =========================================================
+   预置软件：共 40 款，来自「电教委员常用软件下载站」
+   icon 沿用原站的图标地址（图片直链），不要替换成 emoji
+   more = 官网 / GitHub / 其它平台版本的直链
+   ========================================================= */
+const SOFTWARE_SEED = [
+  {
+    id: "sw-01",
+    title: "MemReduct",
+    desc: "轻量级内存清理工具",
+    detail: "一款轻量级内存清理工具，启动速度快、占用资源极少。它能有效释放系统多余内存，清理后台进程占用的 RAM 资源，特别适合内存较小的老旧电脑提升运行速度。",
+    category: "系统工具",
+    size: "373 KB",
+    url: "https://github.com/henrypp/memreduct/releases/download/v.3.5.2/memreduct-3.5.2-setup.exe",
+    icon: "https://img.32r.com/logo/201116/202011161631543933.png",
+    tags: ["v3.5.2","Windows 7 ~ 11（32/64 位）"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.henrypp.org/product/memreduct"
+        },
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/henrypp/memreduct"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-02",
+    title: "Geek Uninstaller",
+    desc: "口碑极佳的深度卸载工具，单文件绿色版",
+    detail: "一款口碑极佳的 Windows 深度卸载闭源工具，采用单文件绿色版设计，无需安装即可使用。它先调用软件自带卸载程序，完成后自动扫描并清理残留的文件、文件夹和注册表项，支持强制卸载顽固软件。",
+    category: "系统工具",
+    size: "3.04 MB",
+    url: "https://geekuninstaller.com/geek.zip",
+    icon: "https://ts4.tc.mm.bing.net/th/id/ODF.ytgfeSURamIxStoRL-3p_w?w=32&h=32&qlt=90&pcl=fffffa&r=0&o=6&pid=1.2",
+    tags: ["v1.5.4.180","Windows 7 ~ 11"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://geekuninstaller.com/"
+        },
+        {
+            "label": "GitHub 仓库",
+            "url": "https://www.bilibili.com/video/BV1GJ411x7h7/?spm_id_from=333.1245.recommend_more_video.0&trackid=web_related_0.router-related-2479604-6dnm7.1787986736249.950"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-03",
+    title: "ClassIsland",
+    desc: "专为教室大屏设计的桌面课表工具",
+    detail: "一款专为教室多媒体大屏和学生电脑设计的桌面课表工具。它以悬浮窗形式显示在屏幕边缘，支持课程倒计时、上下课提醒和自动切换课程，帮助师生直观掌握课程进度。",
+    category: "教学辅助",
+    size: "60 MB+",
+    url: "https://github.com/ClassIsland/ClassIsland/releases/download/2.1.0.1/ClassIsland_app_windows_x64_selfContained_folder.zip",
+    icon: "https://ts2.tc.mm.bing.net/th/id/ODF.RX6vm4h6pbzf5r-HkYPwGA?w=32&h=32&qlt=90&pcl=fffffa&r=0&o=6&pid=1.2",
+    tags: ["v2.1.0.1","Windows 10/11（x86 / x64 / ARM64）、macOS、Linux"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.classisland.tech/"
+        },
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/ClassIsland/ClassIsland"
+        },
+        {
+            "label": "Windows x86 selfContained",
+            "url": "https://github.com/ClassIsland/ClassIsland/releases/download/2.1.0.1/ClassIsland_app_windows_x86_selfContained_folder.zip",
+            "size": "120 MB",
+            "note": "适用于老旧 32 位系统，含运行时，SHA512：3090A7B059A1087A9908D4F8CAD92D25F3421DD793ECE2C9E144F0C772396D64F5D51821B4716573D67B70CCA9BAA7EA2290DF92507FBCB6704868EBD66C27AA，请注意核对文件 SHA512 是否正确。"
+        },
+        {
+            "label": "Windows x64 full_folder",
+            "url": "https://github.com/ClassIsland/ClassIsland/releases/download/2.1.0.1/ClassIsland_app_windows_x64_full_folder.zip",
+            "size": "64.8 MB",
+            "note": "64 位 Windows 系统，不含运行时，SHA512：29BA0E7926BC81CF9D3D5FCC576B652CC85ACBCFE40F3354BC567E17F065C61660F2A62AECBAEE85A921A4B9EA0C7E799CD77ED890526C786D013636EAB50039，请注意核对文件 SHA512 是否正确。"
+        },
+        {
+            "label": "Windows x86 full_folder",
+            "url": "https://github.com/ClassIsland/ClassIsland/releases/download/2.1.0.1/ClassIsland_app_windows_x86_full_folder.zip",
+            "size": "64 MB",
+            "note": "32 位 Windows 系统，不含运行时，SHA512：003E363E26C825EB284A1CB752F84255EABB21C9E4403C83439FB5EF61EA654FB9A6EB9888C82AD05F6BC6BA2C7E94579FDBFE6FCFC62D7CF685E7B0EEB29FBC，请注意核对文件 SHA512 是否正确。"
+        },
+        {
+            "label": "Windows ARM selfContained",
+            "url": "https://github.com/ClassIsland/ClassIsland/releases/download/2.1.0.1/ClassIsland_app_windows_arm64_selfContained_folder.zip",
+            "size": "120 MB",
+            "note": "Windows on ARM，含运行时，SHA512：EB2683D0F37B5D3A47D812D22F25830F6DB0F5B2B74838223BDD5DF26667CB2F9364D96FEDD710593C3E8B91D5D4BB34CC474593466E75FE3C6CBA1F2A2A669F，请注意核对文件 SHA512 是否正确。"
+        },
+        {
+            "label": "Windows ARM full_folder",
+            "url": "https://github.com/ClassIsland/ClassIsland/releases/download/2.1.0.1/ClassIsland_app_windows_arm64_full_folder.zip",
+            "size": "63.5 MB",
+            "note": "Windows on ARM，不含运行时，SHA512：BB625AEAC5609ABE3866FDEE45B2102D394BE49756CBF5B7DE4EBECECD39BAC3B0FD26778BCBC4B26618014FEB2342DAD78DB601CA29C67F3D58A09CA7618E17，请注意核对文件 SHA512 是否正确。"
+        },
+        {
+            "label": "MacOS x64",
+            "url": "https://github.com/ClassIsland/ClassIsland/releases/download/2.1.0.1/ClassIsland_app_macos_x64_selfContained_pkg.pkg",
+            "size": "91.6 MB",
+            "note": "MacOS 版本，SHA512：29BA0E7926BC81CF9D3D5FCC576B652CC85ACBCFE40F3354BC567E17F065C61660F2A62AECBAEE85A921A4B9EA0C7E799CD77ED890526C786D013636EAB50039，请注意核对文件 SHA512 是否正确。"
+        },
+        {
+            "label": "MacOS arm64",
+            "url": "https://github.com/ClassIsland/ClassIsland/releases/download/2.1.0.1/ClassIsland_app_macos_arm64_selfContained_pkg.pkg",
+            "size": "90.1 MB",
+            "note": "MacOS 版本，SHA512：29BA0E7926BC81CF9D3D5FCC576B652CC85ACBCFE40F3354BC567E17F065C61660F2A62AECBAEE85A921A4B9EA0C7E799CD77ED890526C786D013636EAB50039，请注意核对文件 SHA512 是否正确。"
+        },
+        {
+            "label": "Linux x64 含运行时",
+            "url": "https://github.com/ClassIsland/ClassIsland/releases/download/2.1.0.1/ClassIsland_app_linux_x64_selfContained_folder.zip    ",
+            "size": "88.5 MB",
+            "note": "08EC7C4E8427104825717CD5E684BDBEA231E5B91EDF60083D3534DCA0E26E2454C83EE1F0CB6D57EA242ACD82E4F02A5E62CC9E82006DA7F919AF1EACC949D6，请注意核对文件 SHA512 是否正确。"
+        },
+        {
+            "label": "Linux arm64 含运行时",
+            "url": "https://github.com/ClassIsland/ClassIsland/releases/download/2.1.0.1/ClassIsland_app_linux_arm64_selfContained_folder.zip",
+            "size": "86 MB",
+            "note": "4C7B37036731B06AA7E46579430115794BF4CB3A240889DA94C8A3BBA3D8816A1214047022E04EDA01B5D55E739261AD5583C426BE9E1EDBE3AF9DE150888316，请注意核对文件 SHA512 是否正确。"
+        },
+        {
+            "label": "Linux x64 便携版",
+            "url": "https://github.com/ClassIsland/ClassIsland/releases/download/2.1.0.1/ClassIsland_app_linux_x64_selfContained_deb.deb",
+            "size": "64.9 MB",
+            "note": "08EC7C4E8427104825717CD5E684BDBEA231E5B91EDF60083D3534DCA0E26E2454C83EE1F0CB6D57EA242ACD82E4F02A5E62CC9E82006DA7F919AF1EACC949D6，请注意核对文件 SHA512 是否正确。"
+        },
+        {
+            "label": "Linux arm64 便携版",
+            "url": "https://github.com/ClassIsland/ClassIsland/releases/download/2.1.0.1/ClassIsland_app_linux_arm64_selfContained_deb.deb",
+            "size": "62 MB",
+            "note": "D92CFEB820025EF012FDE3BABD2CC9AAED7BFB601F49EF38078744889CB3E3F75CD17CC60A5F0E4040998C0949866BFD28A8A7B193AC1E3E98DB4885072EB9CE，请注意核对文件 SHA512 是否正确。"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-04",
+    title: "Class Widgets 2",
+    desc: "桌面小组件化课表，第二代版本",
+    detail: "Class Widgets 的第二代版本，主打桌面小组件化的课表展示。支持更灵活的课程安排、多周课表切换和考试倒计时，界面风格偏向现代小组件设计。",
+    category: "教学辅助",
+    size: "101 MB+",
+    url: "https://github.com/RinLit-233-shiroko/Class-Widgets-2/releases/download/2.0.0.2/ClassWidgets-2-Windows.zip",
+    icon: "https://ts1.tc.mm.bing.net/th/id/ODF.kfPOG12cGFCHf5t8EvY7MQ?w=32&h=32&qlt=93&pcl=fffffa&r=0&o=6&pid=1.2",
+    tags: ["v2.0.0.2","Windows 10/11、macOS（x64 / ARM64）"],
+    more: [
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/RinLit-233-shiroko/Class-Widgets-2"
+        },
+        {
+            "label": "MacOS x64",
+            "url": "https://github.com/RinLit-233-shiroko/Class-Widgets-2/releases/download/2.0.0.2/ClassWidgets-2-macOS-X64.dmg",
+            "size": "441 MB",
+            "note": ""
+        },
+        {
+            "label": "MacOS Arm64",
+            "url": "https://github.com/RinLit-233-shiroko/Class-Widgets-2/releases/download/2.0.0.2/ClassWidgets-2-macOS-ARM64.dmg",
+            "size": "421 MB",
+            "note": ""
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-05",
+    title: "希沃课堂助手",
+    desc: "希沃生态核心课堂互动工具",
+    detail: "希沃官方出品的PPT播放辅助工具。主要为WPS和Office添加类似希沃白板5的便捷翻页按钮，并支持手机扫码连接，实现远程翻页和手机传屏。",
+    category: "教学辅助",
+    size: "164 MB",
+    url: "https://cstore-pub-cos-seewo-report-tx.seewo.com/seewo-report_uwizpymphhulnhlwhxqwpmmwxihhihhh?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDJUXMxJRLzPaeMp20jDSTFl23pLcdPwDF%26q-sign-time%3D1782895047%3B2098255047%26q-key-time%3D1782895047%3B2098255047%26q-header-list%3Dhost%26q-url-param-list%3Dresponse-content-disposition%26q-signature%3Dc4a971f3265fb805ed934b00fde98d6a628fdc0b&response-content-disposition=attachment%3Bfilename%3D%22SeewoIwbAssistant_0.0.3.1309.exe%22%3Bfilename%2A%3Dutf-8%27%27SeewoIwbAssistant_0.0.3.1309.exe",
+    icon: "https://ts2.tc.mm.bing.net/th/id/OIP-C.qgw6ICv5s8k08zfenUmQJAAAAA?w=108&h=108&c=1&bgcl=ae6748&r=0&o=7&dpr=2&pid=ImgRC&rm=3",
+    tags: ["v0.0.3.1309","Windows 10/11"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://e.seewo.com/#/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-06",
+    title: "PPT Touch Assist",
+    desc: "触控屏 PPT 授课辅助工具",
+    detail: "一款专为触控屏教学场景设计的 PPT 辅助工具。它弥补了原生 PowerPoint 在触控交互上的不足，简单实用。",
+    category: "教学辅助",
+    size: "46.5 MB",
+    url: "https://github.com/RinLit-233-shiroko/PowerPoint-Touch-Assist/releases/download/Release1.2/v1.2.PowerPoint_Touch_Assist.zip",
+    icon: "https://gitee.com/tiny-nick/ppttouch-assist-logo/raw/master/logo.png",
+    tags: ["v1.2.0","Windows 10/11（需触控屏）"],
+    more: [
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/RinLit-233-shiroko/PowerPoint-Touch-Assist"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-07",
+    title: "Luminalium",
+    desc: "开源演示助手（荧素万演），希沃替代方案",
+    detail: "一款开源的演示助手工具，定位为希沃课堂助手的替代方案。它内置丰富的手写笔功能，支持笔宽、颜色、透明度调节，以及 COM 画笔与内置渲染画笔的切换，更加易用和可自定义。",
+    category: "教学辅助",
+    size: "438 MB",
+    url: "https://github.com/SECTL/Luminalium/releases/download/v1.4.1.0/lumn1410_release_windows_x86_64.zip",
+    icon: "https://gitee.com/tiny-nick/ppttouch-assist-logo/raw/master/luminaliumlogo.svg",
+    tags: ["v1.4.1.0 Momokan","Windows 10/11（x64）"],
+    more: [
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/SECTL/Luminalium"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-08",
+    title: "ICC-CE",
+    desc: "课堂教学评价与互动工具",
+    detail: "一款面向课堂教学评价的辅助工具，用于提升课堂互动和学生参与度。功能涵盖课堂表现评分、小组竞赛积分、随机抽选、计时器等，帮助教师实现即时反馈和互动教学。",
+    category: "教学辅助",
+    size: "62 MB+",
+    url: "https://github.com/InkCanvasForClass/community/releases/download/1.8.0.4/InkCanvasForClass.CE.1.8.0.4-x64.Setup.exe",
+    icon: "https://ts4.tc.mm.bing.net/th/id/OIP-C.ubO6mUEw2mBvl2YxUB7CigHaHa?w=108&h=108&c=1&bgcl=c4655a&r=0&o=7&dpr=2&pid=ImgRC&rm=3",
+    tags: ["v1.8.0.4","Windows 10/11（x64）"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.iccce.dpdns.org/"
+        },
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/InkCanvasForClass/community"
+        },
+        {
+            "label": "InkCanvasForClass.CE.1.8.0.4-x64.zip",
+            "url": "https://github.com/InkCanvasForClass/community/releases/download/1.8.0.4/InkCanvasForClass.CE.1.8.0.4-x64.zip",
+            "size": "",
+            "note": ""
+        },
+        {
+            "label": "InkCanvasForClass.CE.1.8.0.4.Setup.exe",
+            "url": "https://github.com/InkCanvasForClass/community/releases/download/1.8.0.4/InkCanvasForClass.CE.1.8.0.4.Setup.exe",
+            "size": "",
+            "note": ""
+        },
+        {
+            "label": "InkCanvasForClass.CE.1.8.0.4.zip",
+            "url": "https://github.com/InkCanvasForClass/community/releases/download/1.8.0.4/InkCanvasForClass.CE.1.8.0.4.zip",
+            "size": "",
+            "note": ""
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-09",
+    title: "Easy PDF",
+    desc: "轻量级 PDF 处理工具，简单易用",
+    detail: "一款轻量级的 PDF 处理工具，主打简单易用。提供 PDF 阅读、合并、拆分和格式转换等基础功能，满足日常办公中的轻量 PDF 处理需求，无需安装臃肿的专业软件。",
+    category: "其他工具",
+    size: "269.7 MB",
+    url: "https://apps.microsoft.com/detail/9p02klsbznmn?hl=zh-CN&gl=CN",
+    icon: "https://store-images.s-microsoft.com/image/apps.12156.14469075154290609.fdf68dd1-44b5-46ad-bd5c-8db7f4fc1547.ed841955-a203-4e78-8429-c10e181cf8b8?h=170",
+    tags: ["v上次更新日期 2026/8/7","Windows 10/11"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://apps.microsoft.com/detail/9p02klsbznmn?hl=zh-CN&gl=CN"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-10",
+    title: "Screenbox",
+    desc: "Fluent Design 开源媒体播放器",
+    detail: "一款专为 Windows 10/11 设计的开源媒体播放器，采用微软 Fluent Design 设计语言。底层基于 LibVLC，解码能力强大，支持 4K/HDR/AV1 全格式硬解，界面现代美观，与 Win11 系统 UI 完美融合。",
+    category: "其他工具",
+    size: "222.5 MB",
+    url: "https://apps.microsoft.com/detail/9ntsnmsvcb5l?hl=zh-CN&gl=CN",
+    icon: "https://store-images.s-microsoft.com/image/apps.27252.14412253091153471.48adf666-dcc9-44d1-95e6-206f697e816d.5cf5d0d2-01e6-4c17-bb43-9f1cb0bbb7ec?h=170",
+    tags: ["v上次更新日期 2026/8/18","Windows 10/11"],
+    more: [
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/huynhsontung/Screenbox"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-11",
+    title: "Snipaste",
+    desc: "截图 + 贴图神器，效率必备",
+    detail: "一款轻量级截图与屏幕贴图工具，由国内独立开发者打造。核心亮点是\"贴图\"功能——截图后可转为始终置顶的悬浮窗口，同时支持像素级精准截图、屏幕取色和丰富的标注工具，是提升工作效率的神器。",
+    category: "其他工具",
+    size: "41.3 MB",
+    url: "https://apps.microsoft.com/detail/9p1wxpkb68kx?hl=zh-CN&gl=CN",
+    icon: "https://store-images.s-microsoft.com/image/apps.25543.14503356220976813.6529113a-95e4-4700-808f-6c91cac3e590.fa86b8ea-8644-48ca-9ae9-b35b06e3a5af?h=170",
+    tags: ["v2.11.3","Windows 7 ~ 11、Linux、macOS"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.snipaste.com/"
+        },
+        {
+            "label": "Windows x86 ",
+            "url": "https://download.snipaste.com/archives/Snipaste-2.11.3-x86.zip",
+            "size": "",
+            "note": "适用于 32 位系统"
+        },
+        {
+            "label": "Windows ARM ",
+            "url": "https://download.snipaste.com/archives/Snipaste-2.11.3-arm64.zip",
+            "size": "",
+            "note": ""
+        },
+        {
+            "label": "Linux",
+            "url": "https://download.snipaste.com/archives/Snipaste-2.11.3-x86_64.AppImage",
+            "size": "",
+            "note": ""
+        },
+        {
+            "label": "macOS",
+            "url": "https://download.snipaste.com/archives/Snipaste-2.11.3.dmg",
+            "size": "",
+            "note": ""
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-12",
+    title: "Watt Toolkit",
+    desc: "可为 Github 加速，同时也是一个开源跨平台的多功能 Steam 工具箱",
+    detail: "详细介绍（详情页显示）",
+    category: "其他工具",
+    size: "438.1 MB",
+    url: "https://apps.microsoft.com/detail/9mtcfhs560ng?launch=true&hl=zh-CN&gl=CN",
+    icon: "https://store-images.s-microsoft.com/image/apps.49815.13810726275500961.53450795-b99b-437a-849b-6599bed03235.164e92bb-9c74-4d22-8a35-7e1530f9dc4e?h=170",
+    tags: ["v上次更新日期 2026/3/12","Windows 10/11、Android、iOS、macOS、Linux"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://steampp.net/"
+        },
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/BeyondDimension/SteamTools"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-13",
+    title: "Microsoft Store",
+    desc: "微软应用商店下载",
+    detail: "More apps, more open.",
+    category: "教学软件",
+    size: "132.4 MB",
+    url: "https://apps.microsoft.com/detail/9wzdncrfjbmp?hl=zh-CN&gl=CN",
+    icon: "https://store-images.s-microsoft.com/image/apps.23920.9007199266252480.ef650c0b-5855-42e5-95aa-16fe9d95c138.a336dde8-771a-4160-a7dc-b2f0cc3f4b6b?h=170",
+    tags: ["v上次更新日期 2026/8/28","Windows 10 +"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://apps.microsoft.com/detail/9wzdncrfjbmp?hl=zh-CN&gl=CN"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-14",
+    title: "Bing Wallpaper",
+    desc: "必应壁纸",
+    detail: "Bing Wallpaper includes a collection of beautiful images from around the world that have been featured on the Bing homepage. Not only will you see a new image on your desktop each day, but you can also browse images and learn where they are from.",
+    category: "其他工具",
+    size: "未知",
+    url: "https://apps.microsoft.com/detail/xpfp7f8rl7mb1w?hl=zh-CN&gl=CN",
+    icon: "https://images-eds-ssl.xboxlive.com/image?url=4rt9.lXDC4H_93laV1_eHM0OYfiFeMI2p9MWie0CvL99U4GA1gf6_kayTt_kBblFwHwo8BW8JXlqfnYxKPmmBeRogmRf1xieDJbrjYvc.hUvqidNQtgZY7VtoCuVM31yHuXAFled7S57y0AM6xx1XMCHawJ_zIRORv7SCOGYUFs-&format=source&h=307",
+    tags: ["v上次更新日期 2026/3/12","Windows 10 +"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://apps.microsoft.com/detail/xpfp7f8rl7mb1w?hl=zh-CN&gl=CN"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-15",
+    title: "希沃白板",
+    desc: "希沃白板5 正版下载",
+    detail: "希沃白板5 正版下载",
+    category: "教学软件",
+    size: "195 MB",
+    url: "https://cstore-pub-cos-seewo-report-tx.seewo.com/seewo-report_uwiwiilnhhulnhlwhyjwpijvmkphihhh?sign=q-sign-algorithm%3Dsha1%26q-ak%3DAKIDJUXMxJRLzPaeMp20jDSTFl23pLcdPwDF%26q-sign-time%3D1787726354%3B2103086354%26q-key-time%3D1787726354%3B2103086354%26q-header-list%3Dhost%26q-url-param-list%3Dresponse-content-disposition%26q-signature%3D1b95edc967fbc4fb10f30f89ce833adb0a5b725c&response-content-disposition=attachment%3Bfilename%3D%22EasiNoteSetup_5.2.4.10148_seewo.exe%22%3Bfilename%2A%3Dutf-8%27%27EasiNoteSetup_5.2.4.10148_seewo.exe",
+    icon: "https://imlizhi-store-https.seewo.com/937781dc53634b05b6d062bc76580938",
+    tags: ["v5.2.4.10148（2026-08-26）","Windows 7 +"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://easinote.seewo.com/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-16",
+    title: "希沃品课",
+    desc: "希沃品课正版下载",
+    detail: "希沃品课正版下载",
+    category: "教学软件",
+    size: "340 MB",
+    url: "https://cstore-public.seewo.com/pinco-ota/seewoPincoTeacher_1.2.43.7298(20250930112805).exe",
+    icon: "https://imlizhi-store-https.seewo.com/12f46683065e40e5b6d5db8a8b1cbab2",
+    tags: ["v1.2.43.7298","Windows 10 +"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://e.seewo.com/#/"
+        },
+        {
+            "label": "Windows 小组端",
+            "url": "https://cstore-public.seewo.com/pinco-ota/seewoPincoGroupSetup_1.2.38.1673.exe",
+            "size": "163 MB",
+            "note": ""
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-17",
+    title: "微信",
+    desc: "微信正版下载链接",
+    detail: "微信正版下载链接",
+    category: "教学软件",
+    size: "未知",
+    url: "https://weixin.qq.com/",
+    icon: "https://ts4.tc.mm.bing.net/th/id/OIP-C.Q3gcrpIwxi7eNGhb-MMC8gHaHa?w=108&h=108&c=1&bgcl=cc5a44&r=0&o=7&dpr=2&pid=ImgRC&rm=3",
+    tags: ["v官网","Windows 7+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://weixin.qq.com/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-18",
+    title: "QQ",
+    desc: "QQ正版下载链接",
+    detail: "QQ正版下载链接",
+    category: "教学软件",
+    size: "未知",
+    url: "https://im.qq.com/index/#/",
+    icon: "https://ts1.tc.mm.bing.net/th/id/OIP-C.vAfIO_n4xCHQMfn1ga7mQwHaHa?w=108&h=108&c=1&bgcl=4184f9&r=0&o=7&dpr=2&pid=ImgRC&rm=3",
+    tags: ["v官网","Windows 7+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://im.qq.com/index/#/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-19",
+    title: "Office Tool Plus",
+    desc: "微软 Office 安装工具",
+    detail: "微软 Office 安装工具，支持下载各种最新版本以及提供多种激活方式",
+    category: "教学软件",
+    size: "未知",
+    url: "https://www.officetool.plus/zh-cn/introduction/download.html",
+    icon: "https://www.officetool.plus/images/office-tool-plus-logo-large.webp",
+    tags: ["v跟随官网","Windows 7+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.officetool.plus/zh-cn/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-20",
+    title: "WPS Office",
+    desc: "WPS 官方下载链接",
+    detail: "WPS 官方下载链接",
+    category: "教学软件",
+    size: "未知",
+    url: "https://www.officetool.plus/zh-cn/introduction/download.html",
+    icon: "https://ts3.tc.mm.bing.net/th/id/OSAAS.7CC8BBB60799D19E4D663503A3BEF8F2?w=52&h=52&c=17&rs=1&r=0&o=6&dpr=1.1&pid=TechQna",
+    tags: ["v跟随官网","Windows 7+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.wps.cn/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-21",
+    title: "Google Chrome",
+    desc: "谷歌离线下载站",
+    detail: "谷歌离线下载站",
+    category: "教学软件",
+    size: "未知",
+    url: "https://www.google.cn/chrome/",
+    icon: "https://www.google.cn/chrome/static/images/chrome-logo-m100.svg",
+    tags: ["v跟随官网","Windows 10+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.google.cn/chrome/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-22",
+    title: "Heu_Kms_Activator激活工具",
+    desc: "Windows  Office激活工具",
+    detail: "Windows  Office激活工具，多种激活方式！",
+    category: "系统工具",
+    size: "4.88 MB",
+    url: "https://github.com/zbezj/HEU_KMS_Activator/releases/download/64.0.0/HEU_KMS_Activator_v64.0.0.rar",
+    icon: "https://www.aichunjing.com/d/file/2025-03-16/30e0bc7654b243e1136e99979faac56f.png",
+    tags: ["v64.04.0","Windows XP+"],
+    more: [
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/zbezj/HEU_KMS_Activator/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-23",
+    title: "Supermium",
+    desc: "针对旧版和现代 Windows 系统进行了优化的 Chromium 浏览器",
+    detail: "针对旧版和现代 Windows 系统进行了优化的 Chromium 浏览器，即使在旧版 Windows 上也可以使用最新的 Chromium 版本",
+    category: "教学软件",
+    size: "110 MB+",
+    url: "https://github.com/win32ss/supermium/releases/download/v144-r5/supermium_144_64_setup.exe",
+    icon: "https://img.jbzj.com/do/uploads/litimg/240701/_104611J5.jpg",
+    tags: ["v144.0.7559.256 R5","Windows 7+"],
+    more: [
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/win32ss/supermium"
+        },
+        {
+            "label": "Windows 32 位",
+            "url": "https://github.com/win32ss/supermium/releases/download/v144-r5/supermium_144_32_setup.exe",
+            "size": "110 MB",
+            "note": ""
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-24",
+    title: "360系统急救箱",
+    desc: "强力查杀顽固木马病毒的系统救援工具",
+    detail: "360系统急救箱是强力查杀木马病毒的系统救援工具，对各类流行的顽固木马查杀效果极佳，如犇牛、机器狗、灰鸽子、扫荡波、磁碟机等。当电脑感染顽固病毒、杀毒软件无法查杀或无法运行时，可使用急救箱进行深度扫描和清除。",
+    category: "系统工具",
+    size: "57 MB",
+    url: "https://weishi.360.cn/jijiuxiang/index.html",
+    icon: "https://p1.ssl.qhimg.com//d/_open360/logo72nb/221_72.png",
+    tags: ["v5.1.64.1287","Windows XP+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://weishi.360.cn/jijiuxiang/index.html"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-25",
+    title: "火绒安全软件",
+    desc: "轻量级杀毒 + 弹窗拦截",
+    detail: "火绒安全软件是新一代全功能安全软件，基于强大的底层技术，反病毒、主动防御和防火墙三大模块深度整合。占用资源极低，无弹窗广告，能有效拦截各类流氓软件和弹窗，是教室大屏的理想安全防护方案。",
+    category: "系统工具",
+    size: "",
+    url: "https://www.huorong.cn/",
+    icon: "https://cdn-www.huorong.cn/Public/Uploads/uploadfile/images/20240301/b1icon13.svg",
+    tags: ["v6","Windows 7+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.huorong.cn/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-26",
+    title: "Microsoft Edge",
+    desc: "微软官方浏览器",
+    detail: "Microsoft Edge 是基于 Chromium 的现代化浏览器，与 Windows 系统深度集成，支持扩展、集锦、垂直标签页等功能。提供企业版离线安装包（MSI格式），适合教室大屏批量部署和无网络环境安装。",
+    category: "教学软件",
+    size: "",
+    url: "https://apps.microsoft.com/detail/xpfftq037jwmhs?gl=CN&hl=zh-CN",
+    icon: "https://ts3.tc.mm.bing.net/th/id/OIP-C.jpJ_nRsuWnOpLIHCQ9QonAHaHa?w=108&h=108&c=1&bgcl=963369&r=0&o=7&dpr=2&pid=ImgRC&rm=3",
+    tags: ["v跟随官网","Windows 7 ~ 11、macOS、Linux"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.microsoft.com/zh-cn/edge"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-27",
+    title: "360极速浏览器",
+    desc: "Chromium 内核，极速浏览体验",
+    detail: "360极速浏览器基于 Chromium 内核，启动速度快、浏览流畅，支持 Chrome 扩展，适合教室大屏日常上网使用。提供 64 位和 32 位版本。",
+    category: "教学软件",
+    size: "144 MB",
+    url: "http://sedl.360tpcdn.com/cse/360csex_23.1.1253.64.exe",
+    icon: "https://p2.ssl.qhimg.com//dm/72_72_100/t01e07b53460b856918.png",
+    tags: ["v23.1.1253.64","Windows XP +"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://browser.360.cn/ee/"
+        },
+        {
+            "label": "Windows 32位 官方下载",
+            "url": "https://down.360safe.com/cse/360cse_13.5.2044.0.exe",
+            "size": "",
+            "note": "32位版本，适合老旧电脑"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-28",
+    title: "360安全卫士极速版",
+    desc: "永久免费、无弹窗广告的纯净版安全卫士",
+    detail: "360安全卫士极速版主打「永久免费、无弹窗广告」，聚焦简单操作与纯净视觉体验，是360安全卫士的一次革新。保留了系统修复、垃圾清理、软件管家等核心功能，去除了烦人的广告弹窗。",
+    category: "系统工具",
+    size: "90 MB",
+    url: "https://weishi.360.cn/jisu/?eqid=8b0a07e1000940fe00000004646da182",
+    icon: "https://p5.ssl.qhimg.com/dm/72_72_100/t018465913d6e100407.png",
+    tags: ["v15.0.3.1005","Windows 7 ~ 11"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.360.cn/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-29",
+    title: "Firefox 火狐浏览器",
+    desc: "开源浏览器，注重隐私保护",
+    detail: "Firefox 是一款由 Mozilla 打造的开源浏览器，注重用户隐私和数据安全。支持 Windows、macOS、Linux 全平台，提供 64 位 MSI 安装包",
+    category: "教学软件",
+    size: "391.8 MB",
+    url: "https://apps.microsoft.com/detail/9nzvdkpmr9rd?hl=zh-Hans&gl=US",
+    icon: "https://store-images.s-microsoft.com/image/apps.7279.14473293538384797.bcb417dc-ffbe-444e-9589-e6a25f04ad52.156eed19-aa35-4e69-96a7-c11abd7f887d?h=134",
+    tags: ["v跟随官网","Windows 7 ~ 11、macOS、Linux"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.mozilla.org/zh-CN/firefox/"
+        },
+        {
+            "label": "该应用更新频繁，其他版本下载故引导至官网",
+            "url": "https://www.firefox.com/zh-CN/download/all/desktop-release/",
+            "size": "",
+            "note": ""
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-30",
+    title: "哔哩哔哩 PC 客户端",
+    desc: "B站官方 PC 客户端",
+    detail: "哔哩哔哩官方 PC 客户端，相比网页端更合理运用大屏优势，使内容更为沉浸。支持番剧、直播、动态等功能，适合在教室大屏上播放教学视频和优质课程内容。",
+    category: "教学软件",
+    size: "198 MB",
+    url: "https://apps.microsoft.com/detail/xpddvc6xtqqkmm?launch=true&mode=full&hl=zh-CN&gl=CN&ocid=bingwebsearch",
+    icon: "https://images-eds-ssl.xboxlive.com/image?url=4rt9.lXDC4H_93laV1_eHHFT949fUipzkiFOBH3fAiZZUCdYojwUyX2aTonS1aIwMrx6NUIsHfUHSLzjGJFxxuuj.ku6DU7DpevDlTx30eb2rz4LC3mrThQciGHOeJTty.ikEL.NSXU8JoEkqgdccp5jECoMz7JskFErSDSwNOw-&format=source&h=134",
+    tags: ["v1.18.0","Windows 7+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://app.bilibili.com/"
+        },
+        {
+            "label": "Windows",
+            "url": "https://dl.hdslb.com/mobile/fixed/bili_win/bili_win-install.exe?v=1.18.0-3&spm_id_from=333.47.b_646f776e6c6f61642d6c696e6b.9",
+            "size": "",
+            "note": "官网下载页面"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-31",
+    title: "钉钉",
+    desc: "阿里巴巴出品的智能办公协作平台",
+    detail: "钉钉是阿里巴巴集团推出的企业级智能移动办公平台，集即时通讯、视频会议、考勤打卡、审批流程、文档协作等功能于一体。支持Windows、macOS、Android、iOS全平台，是学校、企业日常办公和远程教学的常用工具。",
+    category: "教学软件",
+    size: "约 294 MB",
+    url: "https://www.dingtalk.com/download",
+    icon: "https://pc3.gtimg.com/softmgr/logo/48/26980_48_1775182015.png",
+    tags: ["v8.5.0","Windows 7+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.dingtalk.com/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-32",
+    title: "腾讯会议",
+    desc: "腾讯出品的高清视频会议与网课工具",
+    detail: "腾讯会议是腾讯推出的高清流畅、便捷易用的云视频会议产品。支持屏幕共享、美颜、背景虚化、会议录制等功能，疫情期间已成为网课和远程办公的首选工具之一。支持Windows、macOS、Android、iOS全平台，并提供Web版入会方式。",
+    category: "教学软件",
+    size: "约 280 MB",
+    url: "https://meeting.tencent.com/download/",
+    icon: "https://meeting.tencent.com/favicon.ico",
+    tags: ["v3.44.10.457","Windows 7+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://meeting.tencent.com/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-33",
+    title: "Everything",
+    desc: "极速文件搜索工具",
+    detail: "Everything 是一款极速文件搜索工具，能在数秒内索引并搜索整个硬盘的数百万个文件。占用资源极低，搜索速度极快，是电教委员维护班级电脑时查找文件的神器。永久免费，请认准官网下载。",
+    category: "系统工具",
+    size: "1.3 MB+",
+    url: "https://www.voidtools.com/Everything-1.4.1.1032.x64.msi",
+    icon: "https://www.voidtools.com/favicon.ico",
+    tags: ["v1.4.1.1032","Windows 7 ~ 11"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.voidtools.com/zh-cn/"
+        },
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/voidtools/Everything"
+        },
+        {
+            "label": "Windows 64位 便携版",
+            "url": "https://www.voidtools.com/Everything-1.4.1.1032.x64.zip",
+            "size": "1.3 MB",
+            "note": "便携版，解压即用，不写入注册表"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-34",
+    title: "班级优化大师",
+    desc: "希沃出品的课堂管理与评价工具",
+    detail: "班级优化大师是一款课堂管理工具，帮助老师通过多维度评价促进学生德智体美劳全面发展。支持加分减分、随机点名、小组评比等功能，能有效活跃课堂氛围，是希沃生态中的重要教学工具。",
+    category: "教学软件",
+    size: "148 MB",
+    url: "http://care.seewo.com/pc/download",
+    icon: "https://care.seewo.com/favicon.ico",
+    tags: ["v2.1.0.3820","Windows 7 ~ 11"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "http://care.seewo.com/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-35",
+    title: "智绘教 Inkeys",
+    desc: "丝滑流畅的屏幕批注工具",
+    detail: "智绘教 Inkeys 是一款适用于 Windows 的屏幕批注工具，拥有丝滑流畅的高性能画笔、丰富强大的功能，以及众多贴心小设计，只为尽可能地提高课堂教学效率。适用于触摸屏设备和 PC 端，是 Luminalium 和希沃课堂助手之外的又一优秀批注工具。",
+    category: "教学辅助",
+    size: "26.8 MB",
+    url: "https://github.com/Alan-CRL/Inkeys/releases/download/20260713a/Inkeys20260713a-x64.zip",
+    icon: "https://soft-img.30405.com/2026/0727/07271532002464.png?resize=p_5,w_128",
+    tags: ["v20260713a","Windows 7+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.inkeys.top/"
+        },
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/Alan-CRL/Inkeys"
+        },
+        {
+            "label": "x86",
+            "url": "https://github.com/Alan-CRL/Inkeys/releases/download/20260713a/Inkeys20260713a-x86.zip",
+            "size": "",
+            "note": "Github 下载源"
+        },
+        {
+            "label": "Arm64",
+            "url": "https://github.com/Alan-CRL/Inkeys/releases/download/20260713a/Inkeys20260713a-arm64.zip",
+            "size": "",
+            "note": "Github 下载源"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-36",
+    title: "7-Zip",
+    desc: "开源免费的高压缩率解压缩软件",
+    detail: "7-Zip 是一款开源免费的文件压缩/解压缩软件，拥有极高的压缩率和快速的解压速度。支持多种压缩格式，包括 7z、ZIP、RAR、ISO 等。轻量纯净，无广告无捆绑，是教室大屏必备的压缩工具。",
+    category: "系统工具",
+    size: "1.6 MB",
+    url: "https://www.7-zip.org/a/7z2602-x64.exe",
+    icon: "https://ts2.tc.mm.bing.net/th/id/ODF.tW1DZ4ND3pOb43W0A2d2fQ?w=32&h=32&qlt=90&pcl=fffffa&r=0&o=6&pid=1.2",
+    tags: ["v26.02","Windows XP ~ 11"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.7-zip.org/"
+        },
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/ip7z/7zip"
+        },
+        {
+            "label": "Windows 32位 安装版",
+            "url": "https://www.7-zip.org/a/7z2602.exe",
+            "size": "1.2 MB",
+            "note": "32位系统使用"
+        },
+        {
+            "label": "Windows 64位 Github源 安装版",
+            "url": "https://github.com/ip7z/7zip/releases/download/26.02/7z2602-x64.msi",
+            "size": "1.29 MB",
+            "note": "64位系统推荐"
+        },
+        {
+            "label": "Linux x64",
+            "url": "https://github.com/ip7z/7zip/releases/download/26.02/7z2602-linux-x64.tar.xz",
+            "size": "",
+            "note": ""
+        },
+        {
+            "label": "Linux x86",
+            "url": "https://github.com/ip7z/7zip/releases/download/26.02/7z2602-linux-x86.tar.xz",
+            "size": "",
+            "note": ""
+        },
+        {
+            "label": "Linux Arm64",
+            "url": "https://github.com/ip7z/7zip/releases/download/26.02/7z2602-linux-arm64.tar.xz",
+            "size": "",
+            "note": ""
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-37",
+    title: "Bandizip 6.29",
+    desc: "Bandizip最后一个官方无广版本",
+    detail: "Bandizip 是一款界面美观、功能强大的压缩软件。6.29 是最后一个官方无广告的免费版本，后续版本均加入了广告。该版本支持多种压缩格式，内置图片预览功能，压缩和解压速度快，强烈推荐电教委员收藏此版本。",
+    category: "系统工具",
+    size: "约 7 MB",
+    url: "http://it.bandisoft.com/bandizip/dl.php?old",
+    icon: "https://pc3.gtimg.com/softmgr/logo/48/10268_48_1775185920.jpg",
+    tags: ["v6.29","Windows 7 ~ 11"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.bandisoft.com/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-38",
+    title: "Dism 图形界面",
+    desc: "微软商店中的系统优化与DISM图形工具",
+    detail: "DISM的UWP版本，一款让Dism指令图形化的应用，让您方便管理系统！",
+    category: "系统工具",
+    size: "17.3 MB",
+    url: "https://apps.microsoft.com/detail/9p90zdp3f501?hl=zh-CN&gl=CN",
+    icon: "https://store-images.s-microsoft.com/image/apps.7808.14081807280554970.bc9e26e4-5168-4fc1-a644-1f4c12670ef8.351176fa-352c-4b2d-9557-2548b252bedf?h=134",
+    tags: ["v跟随商店更新","Windows 10+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://apps.microsoft.com/detail/9p90zdp3f501?hl=zh-CN&gl=CN"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-39",
+    title: "DiskGenius",
+    desc: "硬盘分区、数据恢复与磁盘管理工具",
+    detail: "DiskGenius 是一款功能强大的磁盘分区管理工具，支持分区管理、数据恢复、坏道检测、系统迁移等功能。提供免费版，无需安装解压即用，是电教委员维护班级电脑硬盘的必备工具。",
+    category: "系统工具",
+    size: "37.1 MB+",
+    url: "https://www.diskgenius.cn/download.php",
+    icon: "https://ts1.tc.mm.bing.net/th/id/OIP-C.2vFw6BHgZ39fhVnJpH0TKQAAAA?w=108&h=108&c=1&bgcl=5523ff&r=0&o=7&dpr=2&pid=ImgRC&rm=3",
+    tags: ["v6.2.0","Windows 2000+"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.diskgenius.cn/"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-40",
+    title: "反银狐病毒浏览器插件VirusDetector",
+    desc: "B站UP主 酪酪肽酪酪 制作的浏览器插件",
+    detail: "由B站UP主「酪酪肽酪酪」制作的浏览器插件，检测网页是否含有银狐木马病毒，同时提供正确网页链接，防止老师下载到木马病毒，向黑产网页宣战！",
+    category: "系统工具",
+    size: "0.1 MB",
+    url: "https://1829353051.share.123pan.cn/123pan/wabZjv-TQyQv?pwd=jlgt#",
+    icon: "https://avatars.githubusercontent.com/u/238968503?s=60&v=4",
+    tags: ["v2.5.2","浏览器（Chrome/Edge 等）"],
+    more: [
+        {
+            "label": "官方网站",
+            "url": "https://www.bilibili.com/video/BV1B5Kj6bEmk/"
+        },
+        {
+            "label": "GitHub 仓库",
+            "url": "https://github.com/Lolitide/VirusDetector"
+        },
+        {
+            "label": "百度网盘",
+            "url": "https://pan.baidu.com/s/1bOHJkkYiZWWbAR8EXXmYBA?pwd=idh7",
+            "size": "",
+            "note": "百度网盘提取码: idh7"
+        },
+        {
+            "label": "夸克网盘",
+            "url": "https://pan.quark.cn/s/780c4d00d7c8",
+            "size": "",
+            "note": "夸克网盘提取码：6Vqn"
+        }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-41",
+    title: "图吧工具箱 2026.08",
+    desc: "图拉丁吧出品的硬件检测与烤机工具合集，内含 90 款常用工具",
+    detail: "图吧工具箱是一个绿色免安装的硬件工具合集，集合了 CPU、内存、显卡、硬盘、显示器、外设的检测与烤机工具，以及系统维护、装机必备软件。全部工具随工具箱一起分发，无需联网逐个下载。注意：官方仅在 www.tbtool.cn 与 tbtool.dawnstd.cn 发布，其他站点均为假冒。",
+    category: "图吧工具箱",
+    size: "206.9 MB",
+    url: "file:///E:/%E4%B8%8B%E8%BD%BD/IDM/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1202608%E5%AE%89%E8%A3%85%E5%8C%85.exe",
+    icon: '',
+    tags: ['v2026.08', '工具合集', '绿色免安装'],
+    more: [
+        { label: '官方网站', url: 'https://www.tbtool.cn/' },
+        { label: '备用官网', url: 'https://tbtool.dawnstd.cn/' },
+        { label: '更新日志', url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%9B%B4%E6%96%B0%E5%86%85%E5%AE%B9.txt" },
+        { label: '已安装目录', url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/" }
+    ],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-42",
+    title: "BatteryInfoView",
+    desc: "查看电池设计容量、实际容量、损耗率与循环次数",
+    detail: "查看电池设计容量、实际容量、损耗率与循环次数（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "78 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/BatteryInfoView/BatteryInfoView.exe",
+    icon: '',
+    tags: ["其他工具","v1.25"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-43",
+    title: "DesktopOK",
+    desc: "保存并一键恢复桌面图标排列",
+    detail: "保存并一键恢复桌面图标排列（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "736 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/DesktopOK/DesktopOK.exe",
+    icon: '',
+    tags: ["其他工具","v9"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-44",
+    title: "DirectX 修复工具",
+    desc: "一键修复缺失的 DirectX 组件与常见运行库",
+    detail: "一键修复缺失的 DirectX 组件与常见运行库（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "24.5 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/DirectX_Repair/Data/C/cp15/cp15e.exe",
+    icon: '',
+    tags: ["其他工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-45",
+    title: "Dism++",
+    desc: "系统清理、启动项管理、驱动备份与更新",
+    detail: "系统清理、启动项管理、驱动备份与更新（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "1.1 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/Dism++/Dism++ARM64.exe",
+    icon: '',
+    tags: ["其他工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-46",
+    title: "Everything",
+    desc: "秒级全盘文件搜索，索引快、占用极低",
+    detail: "秒级全盘文件搜索，索引快、占用极低（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "2.2 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/Everything/everything.exe",
+    icon: '',
+    tags: ["其他工具","v1.4.1.1032"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-47",
+    title: "Geek Uninstaller",
+    desc: "绿色单文件卸载，自动清理残留文件与注册表",
+    detail: "绿色单文件卸载，自动清理残留文件与注册表（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "7.2 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/Geek%20Uninstaller/Geek%20Uninstaller.exe",
+    icon: '',
+    tags: ["其他工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-48",
+    title: "MSI Afterburner",
+    desc: "显卡超频、风扇曲线与硬件状态监控",
+    detail: "显卡超频、风扇曲线与硬件状态监控（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "http://download-cn.msi.com/uti_exe/vga/MSIAfterburnerSetup.zip",
+    icon: '',
+    tags: ["其他工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-49",
+    title: "UltraISO 软碟通",
+    desc: "制作与编辑 ISO 映像、制作 U 盘启动盘",
+    detail: "制作与编辑 ISO 映像、制作 U 盘启动盘（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "1.2 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/ULTRAISO/ULTRAISO.exe",
+    icon: '',
+    tags: ["其他工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-50",
+    title: "WinDbg",
+    desc: "微软官方调试器，分析蓝屏 dump 与程序崩溃",
+    detail: "微软官方调试器，分析蓝屏 dump 与程序崩溃（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "627 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/WinDbg/windbg.exe",
+    icon: '',
+    tags: ["其他工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-51",
+    title: "BlueScreenView",
+    desc: "快速定位蓝屏元凶驱动，列出崩溃时堆栈",
+    detail: "快速定位蓝屏元凶驱动，列出崩溃时堆栈（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "143 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/bluescreenview/BlueScreenViewx64.exe",
+    icon: '',
+    tags: ["其他工具","v1.55"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-52",
+    title: "GifCam",
+    desc: "录屏直接导出 GIF，即开即用",
+    detail: "录屏直接导出 GIF，即开即用（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "1.6 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/gifcam/GifCam.exe",
+    icon: '',
+    tags: ["其他工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-53",
+    title: "MSDN 我告诉你",
+    desc: "官方原版系统镜像与软件索引站",
+    detail: "官方原版系统镜像与软件索引站（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://next.itellyou.cn/",
+    icon: '',
+    tags: ["其他工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-54",
+    title: "Process Explorer",
+    desc: "增强型任务管理器，查看进程树、句柄与 DLL",
+    detail: "增强型任务管理器，查看进程树、句柄与 DLL（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "4.3 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/procexp/procexp.exe",
+    icon: '',
+    tags: ["其他工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-55",
+    title: "Rufus",
+    desc: "制作系统安装 U 盘，支持多种引导与绕过限制",
+    detail: "制作系统安装 U 盘，支持多种引导与绕过限制（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "1.9 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/rufus/rufus.exe",
+    icon: '',
+    tags: ["其他工具","v4.15.2396"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-56",
+    title: "Ventoy",
+    desc: "ISO 直接丢进 U 盘即可引导，不用反复格式化",
+    detail: "ISO 直接丢进 U 盘即可引导，不用反复格式化（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "633 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/ventoy/altexe/Ventoy2Disk_X64.exe",
+    icon: '',
+    tags: ["其他工具","v1.1.0.3"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-57",
+    title: "游戏加加",
+    desc: "游戏帧数与硬件状态悬浮窗监控",
+    detail: "游戏帧数与硬件状态悬浮窗监控（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "http://www.tbtool.cn/gamepp/index.html",
+    icon: '',
+    tags: ["其他工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-58",
+    title: "图吧工具箱皮肤编辑器",
+    desc: "在线制作并下载工具箱皮肤",
+    detail: "在线制作并下载工具箱皮肤（图吧工具箱 2026.08 内置，位于 其他工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "http://www.tbtool.cn/skin/index.html",
+    icon: '',
+    tags: ["其他工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-59",
+    title: "Thaiphoon Burner",
+    desc: "读取内存 SPD/XMP 信息，识别颗粒厂商与时序",
+    detail: "读取内存 SPD/XMP 信息，识别颗粒厂商与时序（图吧工具箱 2026.08 内置，位于 内存工具 分类下）",
+    category: "图吧工具箱",
+    size: "3.9 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%86%85%E5%AD%98%E5%B7%A5%E5%85%B7/Thaiphoon/Thaiphoon.exe",
+    icon: '',
+    tags: ["内存工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-60",
+    title: "ZenTimings",
+    desc: "AMD 平台内存时序、频率与电压实时监控",
+    detail: "AMD 平台内存时序、频率与电压实时监控（图吧工具箱 2026.08 内置，位于 内存工具 分类下）",
+    category: "图吧工具箱",
+    size: "4.0 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%86%85%E5%AD%98%E5%B7%A5%E5%85%B7/ZenTimings/ZenTimings.exe",
+    icon: '',
+    tags: ["内存工具","v1.39.487"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-61",
+    title: "MemTest",
+    desc: "老牌内存错误检测，逐地址读写校验",
+    detail: "老牌内存错误检测，逐地址读写校验（图吧工具箱 2026.08 内置，位于 内存工具 分类下）",
+    category: "图吧工具箱",
+    size: "24 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%86%85%E5%AD%98%E5%B7%A5%E5%85%B7/memtest/memtest.exe",
+    icon: '',
+    tags: ["内存工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-62",
+    title: "MemTest64",
+    desc: "Windows 下直接运行的内存稳定性测试",
+    detail: "Windows 下直接运行的内存稳定性测试（图吧工具箱 2026.08 内置，位于 内存工具 分类下）",
+    category: "图吧工具箱",
+    size: "3.1 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%86%85%E5%AD%98%E5%B7%A5%E5%85%B7/memtest64/MemTest64.exe",
+    icon: '',
+    tags: ["内存工具","v1.0.0.0"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-63",
+    title: "MemTest Pro",
+    desc: "内存压力测试，可自定义线程数与测试量",
+    detail: "内存压力测试，可自定义线程数与测试量（图吧工具箱 2026.08 内置，位于 内存工具 分类下）",
+    category: "图吧工具箱",
+    size: "22 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%86%85%E5%AD%98%E5%B7%A5%E5%85%B7/memtestpro/memtestpro.exe",
+    icon: '',
+    tags: ["内存工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-64",
+    title: "TestMem5（TM5）",
+    desc: "内存超频稳定性测试，常配合 Anta777 配置使用",
+    detail: "内存超频稳定性测试，常配合 Anta777 配置使用（图吧工具箱 2026.08 内置，位于 内存工具 分类下）",
+    category: "图吧工具箱",
+    size: "32 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%86%85%E5%AD%98%E5%B7%A5%E5%85%B7/tm5/TM5.exe",
+    icon: '',
+    tags: ["内存工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-65",
+    title: "魔方内存盘",
+    desc: "把一部分内存虚拟成硬盘，给临时文件加速",
+    detail: "把一部分内存虚拟成硬盘，给临时文件加速（图吧工具箱 2026.08 内置，位于 内存工具 分类下）",
+    category: "图吧工具箱",
+    size: "497 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%86%85%E5%AD%98%E5%B7%A5%E5%85%B7/%E9%AD%94%E6%96%B9%E5%86%85%E5%AD%98%E7%9B%98/ramdisk.exe",
+    icon: '',
+    tags: ["内存工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-66",
+    title: "C2C Latency",
+    desc: "测量 CPU 核心间延迟，排查大小核与跨 CCD 调度问题",
+    detail: "测量 CPU 核心间延迟，排查大小核与跨 CCD 调度问题（图吧工具箱 2026.08 内置，位于 处理器工具 分类下）",
+    category: "图吧工具箱",
+    size: "193 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%84%E7%90%86%E5%99%A8%E5%B7%A5%E5%85%B7/C2CLatency/C2CLatency.exe",
+    icon: '',
+    tags: ["处理器工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-67",
+    title: "CPU-Z",
+    desc: "查看处理器型号、架构、主频、缓存与内存时序的标配检测工具",
+    detail: "查看处理器型号、架构、主频、缓存与内存时序的标配检测工具（图吧工具箱 2026.08 内置，位于 处理器工具 分类下）",
+    category: "图吧工具箱",
+    size: "6.9 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%84%E7%90%86%E5%99%A8%E5%B7%A5%E5%85%B7/CPUZ/cpuz_x64.exe",
+    icon: '',
+    tags: ["处理器工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-68",
+    title: "Core Temp",
+    desc: "逐核心显示 CPU 温度、功耗与实时频率，占用极低",
+    detail: "逐核心显示 CPU 温度、功耗与实时频率，占用极低（图吧工具箱 2026.08 内置，位于 处理器工具 分类下）",
+    category: "图吧工具箱",
+    size: "1.9 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%84%E7%90%86%E5%99%A8%E5%B7%A5%E5%85%B7/CoreTemp/Core%20Temp%20x64.exe",
+    icon: '',
+    tags: ["处理器工具","v1.20.1.150"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-69",
+    title: "LinX",
+    desc: "基于 Linpack 的浮点烤机工具，快速验证 CPU 稳定性",
+    detail: "基于 Linpack 的浮点烤机工具，快速验证 CPU 稳定性（图吧工具箱 2026.08 内置，位于 处理器工具 分类下）",
+    category: "图吧工具箱",
+    size: "3.9 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%84%E7%90%86%E5%99%A8%E5%B7%A5%E5%85%B7/LinX/64-bit/linpack_xeon64.exe",
+    icon: '',
+    tags: ["处理器工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-70",
+    title: "Prime95",
+    desc: "CPU 稳定性烤机与算力测试，最能压出散热和电压问题",
+    detail: "CPU 稳定性烤机与算力测试，最能压出散热和电压问题（图吧工具箱 2026.08 内置，位于 处理器工具 分类下）",
+    category: "图吧工具箱",
+    size: "27.9 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%84%E7%90%86%E5%99%A8%E5%B7%A5%E5%85%B7/Prime95/prime95.exe",
+    icon: '',
+    tags: ["处理器工具","v30"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-71",
+    title: "国际象棋测试（Fritz Chess Benchmark）",
+    desc: "以象棋引擎搜索速度评估 CPU 多核性能",
+    detail: "以象棋引擎搜索速度评估 CPU 多核性能（图吧工具箱 2026.08 内置，位于 处理器工具 分类下）",
+    category: "图吧工具箱",
+    size: "909 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%84%E7%90%86%E5%99%A8%E5%B7%A5%E5%85%B7/XIANGQI/xiangqi.exe",
+    icon: '',
+    tags: ["处理器工具","v4"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-72",
+    title: "Super PI",
+    desc: "经典圆周率计算，考验单核性能与内存延迟",
+    detail: "经典圆周率计算，考验单核性能与内存延迟（图吧工具箱 2026.08 内置，位于 处理器工具 分类下）",
+    category: "图吧工具箱",
+    size: "103 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%84%E7%90%86%E5%99%A8%E5%B7%A5%E5%85%B7/superpi/Superpi.exe",
+    icon: '',
+    tags: ["处理器工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-73",
+    title: "wPrime",
+    desc: "多线程计算基准，衡量 CPU 多核算力",
+    detail: "多线程计算基准，衡量 CPU 多核算力（图吧工具箱 2026.08 内置，位于 处理器工具 分类下）",
+    category: "图吧工具箱",
+    size: "2.6 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%84%E7%90%86%E5%99%A8%E5%B7%A5%E5%85%B7/wPrime/wPrime.exe",
+    icon: '',
+    tags: ["处理器工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-74",
+    title: "Areson 鼠标测试",
+    desc: "鼠标按键连击与微动状态测试",
+    detail: "鼠标按键连击与微动状态测试（图吧工具箱 2026.08 内置，位于 外设工具 分类下）",
+    category: "图吧工具箱",
+    size: "204 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%96%E8%AE%BE%E5%B7%A5%E5%85%B7/AresonMouseTest/%E9%BC%A0%E6%A0%87%E6%B5%8B%E8%AF%95%E8%BD%AF%E4%BB%B6AresonMouseTestProgram.exe",
+    icon: '',
+    tags: ["外设工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-75",
+    title: "KeyTweak",
+    desc: "键盘按键重映射，改键位不装驱动",
+    detail: "键盘按键重映射，改键位不装驱动（图吧工具箱 2026.08 内置，位于 外设工具 分类下）",
+    category: "图吧工具箱",
+    size: "216 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%96%E8%AE%BE%E5%B7%A5%E5%85%B7/KeyTweak/KeyTweak.exe",
+    icon: '',
+    tags: ["外设工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-76",
+    title: "Keyboard Test Utility",
+    desc: "键盘按键与全键无冲测试",
+    detail: "键盘按键与全键无冲测试（图吧工具箱 2026.08 内置，位于 外设工具 分类下）",
+    category: "图吧工具箱",
+    size: "1.9 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%96%E8%AE%BE%E5%B7%A5%E5%85%B7/Keyboard%20Test%20Utility/Keyboard%20Test%20Utility.exe",
+    icon: '',
+    tags: ["外设工具","v1.0.1"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-77",
+    title: "Mouse Rate Checker",
+    desc: "检测鼠标回报率（Hz）是否达标",
+    detail: "检测鼠标回报率（Hz）是否达标（图吧工具箱 2026.08 内置，位于 外设工具 分类下）",
+    category: "图吧工具箱",
+    size: "20 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%96%E8%AE%BE%E5%B7%A5%E5%85%B7/MOUSERATE/MOUSERATE.EXE",
+    icon: '',
+    tags: ["外设工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-78",
+    title: "MouseTester",
+    desc: "鼠标移动轨迹与抖动、丢帧测试",
+    detail: "鼠标移动轨迹与抖动、丢帧测试（图吧工具箱 2026.08 内置，位于 外设工具 分类下）",
+    category: "图吧工具箱",
+    size: "56 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%96%E8%AE%BE%E5%B7%A5%E5%85%B7/MouseTester/MouseTester.exe",
+    icon: '',
+    tags: ["外设工具","v1.5.0.0"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-79",
+    title: "在线外设测试中心",
+    desc: "在线键盘、鼠标、手柄测试",
+    detail: "在线键盘、鼠标、手柄测试（图吧工具箱 2026.08 内置，位于 外设工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://www.pcbox.tech/",
+    icon: '',
+    tags: ["外设工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-80",
+    title: "鼠标单击变双击测试器",
+    desc: "检测微动老化导致的单击变双击",
+    detail: "检测微动老化导致的单击变双击（图吧工具箱 2026.08 内置，位于 外设工具 分类下）",
+    category: "图吧工具箱",
+    size: "570 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%A4%96%E8%AE%BE%E5%B7%A5%E5%85%B7/%E9%BC%A0%E6%A0%87%E5%8D%95%E6%9C%BA%E5%8F%98%E5%8F%8C%E5%87%BB%E6%B5%8B%E8%AF%95%E5%99%A8/%E9%BC%A0%E6%A0%87%E5%8D%95%E5%87%BB%E5%8F%98%E5%8F%8C%E5%87%BB%E6%B5%8B%E8%AF%95%E5%99%A8V2.0.exe",
+    icon: '',
+    tags: ["外设工具","v1.0.0.0"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-81",
+    title: "免费领流量卡",
+    desc: "图吧官方流量卡申请页",
+    detail: "图吧官方流量卡申请页（图吧工具箱 2026.08 内置，位于 常用工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "http://www.tbtool.cn/links/sim2.html",
+    icon: '',
+    tags: ["常用工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-82",
+    title: "检查更新",
+    desc: "检查图吧工具箱版本，直达官网更新页",
+    detail: "检查图吧工具箱版本，直达官网更新页（图吧工具箱 2026.08 内置，位于 常用工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://www.tbtool.cn/Version/index.html",
+    icon: '',
+    tags: ["常用工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-83",
+    title: "AMD 显卡驱动下载",
+    desc: "直达 AMD 官方驱动下载页",
+    detail: "直达 AMD 官方驱动下载页（图吧工具箱 2026.08 内置，位于 显卡工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://www.amd.com/zh-hans/support",
+    icon: '',
+    tags: ["显卡工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-84",
+    title: "Display Driver Uninstaller（DDU）",
+    desc: "在安全模式下彻底清除显卡驱动残留",
+    detail: "在安全模式下彻底清除显卡驱动残留（图吧工具箱 2026.08 内置，位于 显卡工具 分类下）",
+    category: "图吧工具箱",
+    size: "1.7 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E6%98%BE%E5%8D%A1%E5%B7%A5%E5%85%B7/DDU/Display%20Driver%20Uninstaller.exe",
+    icon: '',
+    tags: ["显卡工具","v18.1.5.5"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-85",
+    title: "GPU-Z",
+    desc: "显卡型号、BIOS、传感器与实时负载的权威检测工具",
+    detail: "显卡型号、BIOS、传感器与实时负载的权威检测工具（图吧工具箱 2026.08 内置，位于 显卡工具 分类下）",
+    category: "图吧工具箱",
+    size: "11.1 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E6%98%BE%E5%8D%A1%E5%B7%A5%E5%85%B7/GPUZ/GPU-Z.exe",
+    icon: '',
+    tags: ["显卡工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-86",
+    title: "GPUTest",
+    desc: "跨平台 OpenGL 显卡压力测试与基准跑分",
+    detail: "跨平台 OpenGL 显卡压力测试与基准跑分（图吧工具箱 2026.08 内置，位于 显卡工具 分类下）",
+    category: "图吧工具箱",
+    size: "362 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E6%98%BE%E5%8D%A1%E5%B7%A5%E5%85%B7/GpuTest_Windows%20x64/GpuTest.exe",
+    icon: '',
+    tags: ["显卡工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-87",
+    title: "NVIDIA 显卡驱动下载",
+    desc: "直达 NVIDIA  GeForce 官方驱动下载页",
+    detail: "直达 NVIDIA  GeForce 官方驱动下载页（图吧工具箱 2026.08 内置，位于 显卡工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://www.nvidia.cn/geforce/drivers/",
+    icon: '',
+    tags: ["显卡工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-88",
+    title: "DXVA Checker",
+    desc: "检查显卡硬解能力支持的视频编码格式",
+    detail: "检查显卡硬解能力支持的视频编码格式（图吧工具箱 2026.08 内置，位于 显卡工具 分类下）",
+    category: "图吧工具箱",
+    size: "2.2 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E6%98%BE%E5%8D%A1%E5%B7%A5%E5%85%B7/dxvachecker/DXVAChecker.exe",
+    icon: '',
+    tags: ["显卡工具","v4.8.0.0"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-89",
+    title: "NVIDIA Inspector",
+    desc: "查看并调整 N 卡频率、风扇转速与电压",
+    detail: "查看并调整 N 卡频率、风扇转速与电压（图吧工具箱 2026.08 内置，位于 显卡工具 分类下）",
+    category: "图吧工具箱",
+    size: "455 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E6%98%BE%E5%8D%A1%E5%B7%A5%E5%85%B7/nvidiaInspector/nvidiaInspector.exe",
+    icon: '',
+    tags: ["显卡工具","v1.9.8.1"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-90",
+    title: "NVIDIA Profile Inspector",
+    desc: "深度修改显卡驱动的 3D 配置文件参数",
+    detail: "深度修改显卡驱动的 3D 配置文件参数（图吧工具箱 2026.08 内置，位于 显卡工具 分类下）",
+    category: "图吧工具箱",
+    size: "1019 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E6%98%BE%E5%8D%A1%E5%B7%A5%E5%85%B7/nvidiaProfileInspector/nvidiaProfileInspector.exe",
+    icon: '',
+    tags: ["显卡工具","v3.0.2.1"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-91",
+    title: "UFO 刷新率/拖影测试",
+    desc: "在线测试屏幕刷新率、响应与拖影",
+    detail: "在线测试屏幕刷新率、响应与拖影（图吧工具箱 2026.08 内置，位于 显示器工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://www.testufo.com/",
+    icon: '',
+    tags: ["显示器工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-92",
+    title: "在线屏幕测试",
+    desc: "在线坏点、灰度、色彩与漏光检测",
+    detail: "在线坏点、灰度、色彩与漏光检测（图吧工具箱 2026.08 内置，位于 显示器工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://screen.bmcx.com/#welcome",
+    icon: '',
+    tags: ["显示器工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-93",
+    title: "显示器色域检测（图拉丁版）",
+    desc: "检测显示器色域覆盖与色彩表现",
+    detail: "检测显示器色域覆盖与色彩表现（图吧工具箱 2026.08 内置，位于 显示器工具 分类下）",
+    category: "图吧工具箱",
+    size: "990 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E6%98%BE%E7%A4%BA%E5%99%A8%E5%B7%A5%E5%85%B7/%E8%89%B2%E5%9F%9F%E6%A3%80%E6%B5%8B/monitorinfo.exe",
+    icon: '',
+    tags: ["显示器工具","v2.2.1.0"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-94",
+    title: "游戏Buff",
+    desc: "游戏画质与辅助工具，官方下载",
+    detail: "游戏画质与辅助工具，官方下载（图吧工具箱 2026.08 内置，位于 游戏工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://dl.gamebuff.cn/download/GameBuff_Setup.exe",
+    icon: '',
+    tags: ["游戏工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-95",
+    title: "Steam",
+    desc: "Steam 客户端官方下载入口",
+    detail: "Steam 客户端官方下载入口（图吧工具箱 2026.08 内置，位于 游戏工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://www.tbtool.cn/links/steam.html",
+    icon: '',
+    tags: ["游戏工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-96",
+    title: "暴雪战网",
+    desc: "战网客户端下载入口",
+    detail: "战网客户端下载入口（图吧工具箱 2026.08 内置，位于 游戏工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://www.tbtool.cn/links/battle.html",
+    icon: '',
+    tags: ["游戏工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-97",
+    title: "EA App",
+    desc: "EA 游戏平台客户端下载入口",
+    detail: "EA 游戏平台客户端下载入口（图吧工具箱 2026.08 内置，位于 游戏工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://www.tbtool.cn/links/eaapp.html",
+    icon: '',
+    tags: ["游戏工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-98",
+    title: "Epic Games 商店",
+    desc: "Epic 游戏商店客户端下载入口",
+    detail: "Epic 游戏商店客户端下载入口（图吧工具箱 2026.08 内置，位于 游戏工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://www.tbtool.cn/links/epic.html",
+    icon: '',
+    tags: ["游戏工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-99",
+    title: "斧牛加速器",
+    desc: "游戏网络加速，官网下载",
+    detail: "游戏网络加速，官网下载（图吧工具箱 2026.08 内置，位于 游戏工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://www.fnjiasu.com/download.html",
+    icon: '',
+    tags: ["游戏工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-100",
+    title: "玩家动力",
+    desc: "游戏社区与加速平台",
+    detail: "游戏社区与加速平台（图吧工具箱 2026.08 内置，位于 游戏工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://www.wanjiadongli.com/",
+    icon: '',
+    tags: ["游戏工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-101",
+    title: "迅游加速器",
+    desc: "游戏网络加速，降低延迟与丢包",
+    detail: "游戏网络加速，降低延迟与丢包（图吧工具箱 2026.08 内置，位于 游戏工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://www.xunyou.com",
+    icon: '',
+    tags: ["游戏工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-102",
+    title: "迅雷加速器",
+    desc: "游戏网络加速工具",
+    detail: "游戏网络加速工具（图吧工具箱 2026.08 内置，位于 游戏工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "http://www.tbtool.cn/links/xljsq.html",
+    icon: '',
+    tags: ["游戏工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-103",
+    title: "风灵月影修改器",
+    desc: "FLiNG Trainer 单机修改器站",
+    detail: "FLiNG Trainer 单机修改器站（图吧工具箱 2026.08 内置，位于 游戏工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "http://flingtrainer.com",
+    icon: '',
+    tags: ["游戏工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-104",
+    title: "FurMark（甜甜圈）",
+    desc: "显卡满载烤机，检验稳定性与散热能力",
+    detail: "显卡满载烤机，检验稳定性与散热能力（图吧工具箱 2026.08 内置，位于 烤鸡工具 分类下）",
+    category: "图吧工具箱",
+    size: "3.0 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%83%A4%E9%B8%A1%E5%B7%A5%E5%85%B7/FurMark/FurMark.exe",
+    icon: '',
+    tags: ["烤鸡工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-105",
+    title: "FurMark 2",
+    desc: "新版显卡烤机，支持显存压力测试与基准跑分",
+    detail: "新版显卡烤机，支持显存压力测试与基准跑分（图吧工具箱 2026.08 内置，位于 烤鸡工具 分类下）",
+    category: "图吧工具箱",
+    size: "1.2 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%83%A4%E9%B8%A1%E5%B7%A5%E5%85%B7/FurMark_win64/gpushark/gpushark_x64.exe",
+    icon: '',
+    tags: ["烤鸡工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-106",
+    title: "AS SSD Benchmark",
+    desc: "SSD 顺序、4K 读写与 IOPS 专项跑分",
+    detail: "SSD 顺序、4K 读写与 IOPS 专项跑分（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "440 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/ASSSDBenchmark/ASSSDBenchmark.exe",
+    icon: '',
+    tags: ["硬盘工具","v2.0.7316.34247"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-107",
+    title: "ATTO Disk Benchmark",
+    desc: "按不同块大小测试存储设备的读写速度",
+    detail: "按不同块大小测试存储设备的读写速度（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "5.2 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/ATTODISKBENCHMARK/ATTO%20%E7%A3%81%E7%9B%98%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-108",
+    title: "CrystalDiskInfo",
+    desc: "硬盘 SMART 健康检测，看通电时间与坏道预警",
+    detail: "硬盘 SMART 健康检测，看通电时间与坏道预警（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "2.8 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/CrystalDiskInfo/DiskInfo64S.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-109",
+    title: "CrystalDiskMark",
+    desc: "硬盘/SSD 顺序与随机读写速度跑分",
+    detail: "硬盘/SSD 顺序与随机读写速度跑分（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "849 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/CrystalDiskMark/DiskMark64.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-110",
+    title: "Defraggler",
+    desc: "磁盘碎片整理，支持只整理单个文件",
+    detail: "磁盘碎片整理，支持只整理单个文件（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "3.8 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/Defraggler/Defraggler.exe",
+    icon: '',
+    tags: ["硬盘工具","v2.22.33.995"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-111",
+    title: "DiskGenius",
+    desc: "分区管理、数据恢复、磁盘克隆与坏道修复",
+    detail: "分区管理、数据恢复、磁盘克隆与坏道修复（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "28.8 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/DiskGenius/DiskGenius.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-112",
+    title: "FlashMaster 闪存大师",
+    desc: "U 盘/存储卡量产与修复的在线工具站",
+    detail: "U 盘/存储卡量产与修复的在线工具站（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "https://fm-us.xfjportal.com/",
+    icon: '',
+    tags: ["硬盘工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-113",
+    title: "H2testw",
+    desc: "U 盘/存储卡扩容与坏块检测，写入校验真实容量",
+    detail: "U 盘/存储卡扩容与坏块检测，写入校验真实容量（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "409 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/H2testw/h2testw_1.4.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-114",
+    title: "HD Tune",
+    desc: "硬盘健康检测、基准测速与错误扫描",
+    detail: "硬盘健康检测、基准测速与错误扫描（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "1.2 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/HDTune/HDTune.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-115",
+    title: "HDD LLF Tool",
+    desc: "硬盘低级格式化工具，可修复部分逻辑坏道",
+    detail: "硬盘低级格式化工具，可修复部分逻辑坏道（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "1.9 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/LLFTOOL/LLFTOOL.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-116",
+    title: "SSD Utils",
+    desc: "在线 SSD 工具箱，查看与维护固态硬盘",
+    detail: "在线 SSD 工具箱，查看与维护固态硬盘（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "",
+    url: "http://vlo.name:3000/ssdtool/",
+    icon: '',
+    tags: ["硬盘工具","在线"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-117",
+    title: "SSD-Z",
+    desc: "SSD 型号、固件、主控颗粒与健康度检测",
+    detail: "SSD 型号、固件、主控颗粒与健康度检测（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "1018 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/SSDZ/SSDZ.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-118",
+    title: "SpaceSniffer",
+    desc: "树状图可视化磁盘占用，找出吃空间的大文件",
+    detail: "树状图可视化磁盘占用，找出吃空间的大文件（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "8.3 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/SpaceSniffer/SpaceSniffer.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-119",
+    title: "TxBENCH",
+    desc: "SSD 读写性能测试与 Secure Erase 安全擦除",
+    detail: "SSD 读写性能测试与 Secure Erase 安全擦除（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "4.5 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/TxBENCH/TxBENCH.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-120",
+    title: "URWTEST",
+    desc: "U 盘与存储卡的读写速度实测工具",
+    detail: "U 盘与存储卡的读写速度实测工具（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "41 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/URWTEST/urwtest_v18.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-121",
+    title: "WizTree",
+    desc: "读取 MFT 的极速磁盘空间分析，秒出扫描结果",
+    detail: "读取 MFT 的极速磁盘空间分析，秒出扫描结果（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "10.5 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/WizTree/WizTree.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-122",
+    title: "FinalData",
+    desc: "误删与格式化后的数据恢复工具",
+    detail: "误删与格式化后的数据恢复工具（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "8.8 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/finaldata/FdWizard.exe",
+    icon: '',
+    tags: ["硬盘工具","v2"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-123",
+    title: "MyDiskTest",
+    desc: "快速判断 U 盘、存储卡是否虚标扩容",
+    detail: "快速判断 U 盘、存储卡是否虚标扩容（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "82 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/mydisktest/MyDiskTest_v298.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-124",
+    title: "WinDirStat",
+    desc: "磁盘占用可视化统计，按文件类型着色",
+    detail: "磁盘占用可视化统计，按文件类型着色（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "636 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/windirstat/windirstat.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-125",
+    title: "魔方数据恢复",
+    desc: "魔方出品的误删文件找回工具",
+    detail: "魔方出品的误删文件找回工具（图吧工具箱 2026.08 内置，位于 硬盘工具 分类下）",
+    category: "图吧工具箱",
+    size: "276 KB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%A1%AC%E7%9B%98%E5%B7%A5%E5%85%B7/%E9%AD%94%E6%96%B9%E6%95%B0%E6%8D%AE%E6%81%A2%E5%A4%8D/%E9%AD%94%E6%96%B9%E6%95%B0%E6%8D%AE%E6%81%A2%E5%A4%8D.exe",
+    icon: '',
+    tags: ["硬盘工具"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-126",
+    title: "AIDA64",
+    desc: "完整硬件信息检测，附带系统稳定性与烤机测试",
+    detail: "完整硬件信息检测，附带系统稳定性与烤机测试（图吧工具箱 2026.08 内置，位于 综合检测 分类下）",
+    category: "图吧工具箱",
+    size: "13.7 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%BB%BC%E5%90%88%E6%A3%80%E6%B5%8B/AIDA64/aida64.exe",
+    icon: '',
+    tags: ["综合检测"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-127",
+    title: "HWMonitor",
+    desc: "温度、电压、风扇转速实时监控",
+    detail: "温度、电压、风扇转速实时监控（图吧工具箱 2026.08 内置，位于 综合检测 分类下）",
+    category: "图吧工具箱",
+    size: "3.4 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%BB%BC%E5%90%88%E6%A3%80%E6%B5%8B/HWMonitor/HWMonitor_x64.exe",
+    icon: '',
+    tags: ["综合检测"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-128",
+    title: "RWEverything",
+    desc: "底层硬件寄存器读写工具，进阶调试用",
+    detail: "底层硬件寄存器读写工具，进阶调试用（图吧工具箱 2026.08 内置，位于 综合检测 分类下）",
+    category: "图吧工具箱",
+    size: "12.0 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%BB%BC%E5%90%88%E6%A3%80%E6%B5%8B/RWEverything/Rw.exe",
+    icon: '',
+    tags: ["综合检测"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-129",
+    title: "HWiNFO",
+    desc: "硬件信息最全面的检测工具，传感器数据详尽",
+    detail: "硬件信息最全面的检测工具，传感器数据详尽（图吧工具箱 2026.08 内置，位于 综合检测 分类下）",
+    category: "图吧工具箱",
+    size: "10.4 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%BB%BC%E5%90%88%E6%A3%80%E6%B5%8B/hwinfo/HWiNFO64.exe",
+    icon: '',
+    tags: ["综合检测"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-130",
+    title: "Speccy",
+    desc: "硬件配置一览，界面简洁易读",
+    detail: "硬件配置一览，界面简洁易读（图吧工具箱 2026.08 内置，位于 综合检测 分类下）",
+    category: "图吧工具箱",
+    size: "7.3 MB",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E7%BB%BC%E5%90%88%E6%A3%80%E6%B5%8B/speccy/Speccy64.exe",
+    icon: '',
+    tags: ["综合检测","v1.32.0.803"],
+    date: "2026-09-08"
+  },
+
+  {
+    id: "sw-131",
+    title: "CPU / 显卡天梯图",
+    desc: "图吧内置天梯图，快速比较硬件性能档次",
+    detail: "工具箱自带的 CPU 天梯图与显卡天梯图两张图片，装机前用来快速对比不同型号的性能档次。",
+    category: "图吧工具箱",
+    size: "",
+    url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/%E5%A4%A9%E6%A2%AF%E5%9B%BE/CPU%E5%A4%A9%E6%A2%AF%E5%9B%BE.jpg",
+    icon: "",
+    tags: ["其他工具", "图片"],
+    more: [
+        { label: "显卡天梯图", url: "file:///D:/%E5%9B%BE%E5%90%A7%E5%B7%A5%E5%85%B7%E7%AE%B1/tools/%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7/%E5%A4%A9%E6%A2%AF%E5%9B%BE/%E6%98%BE%E5%8D%A1%E5%A4%A9%E6%A2%AF%E5%9B%BE.jpg" }
+    ],
+    date: "2026-09-08"
+  }
+];
+
+
+/* ============ 2. 数据层：只读页面内置的 SOFTWARE_SEED ============
+   要增删资源，直接改上面的 SOFTWARE_SEED 数组即可（页面不提供在线录入） */
+function normalize(r, i){
+  return {
+    id: r.id || ('r'+Date.now()+'_'+i),
+    title: r.title || '未命名资源',
+    desc: r.desc || '',
+    category: r.category || '未分类',
+    size: r.size || '',
+    url: r.url || '',
+    tags: Array.isArray(r.tags) ? r.tags : (r.tags ? String(r.tags).split(/[,，]/).map(s=>s.trim()).filter(Boolean) : []),
+    icon: r.icon || '',
+    detail: r.detail || '',
+    more: Array.isArray(r.more) ? r.more.filter(m=>m && m.url) : [],
+    date: r.date || new Date().toISOString().slice(0,10)
+  };
+}
+
+let items = SOFTWARE_SEED.map(normalize);
+let filterCat = '全部';
+let keyword = '';
+
+/* ============ 3. 工具 ============ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function parseSize(str){
+  const m = String(str||'').match(/([\d.]+)\s*(B|KB|MB|GB|TB|K|M|G)?/i);
+  if(!m) return 0;
+  const n = parseFloat(m[1]);
+  const u = (m[2]||'B').toUpperCase();
+  const map = {B:1,K:1024,KB:1024,M:1048576,MB:1048576,G:1073741824,GB:1073741824,T:1099511627776,TB:1099511627776};
+  return n * (map[u] || 1);
+}
+function fmtSize(bytes){
+  if(!bytes) return '0 MB';
+  const mb = bytes/1048576;
+  if(mb < 1) return (bytes/1024).toFixed(1) + ' KB';
+  if(mb < 1024) return mb.toFixed(1) + ' MB';
+  return (mb/1024).toFixed(2) + ' GB';
+}
+/* ---- 文件类型识别：根据链接后缀自动给出图标 ---- */
+const EXT_TYPES = {
+  // 压缩包
+  zip:['ZIP','#b45309','#fef3c7'], rar:['RAR','#b45309','#fef3c7'], '7z':['7Z','#b45309','#fef3c7'],
+  tar:['TAR','#b45309','#fef3c7'], gz:['GZ','#b45309','#fef3c7'],
+  // 文档
+  pdf:['PDF','#b91c1c','#fee2e2'],
+  doc:['DOC','#1d4ed8','#dbeafe'], docx:['DOC','#1d4ed8','#dbeafe'],
+  ppt:['PPT','#c2410c','#ffedd5'], pptx:['PPT','#c2410c','#ffedd5'],
+  xls:['XLS','#15803d','#dcfce7'], xlsx:['XLS','#15803d','#dcfce7'],
+  md:['MD','#475569','#e2e8f0'],  txt:['TXT','#475569','#e2e8f0'],
+  // 设计
+  psd:['PSD','#4338ca','#e0e7ff'], ai:['AI','#9a3412','#ffedd5'],
+  fig:['FIG','#7e22ce','#f3e8ff'], sketch:['SKT','#a21caf','#fae8ff'],
+  xd:['XD','#be185d','#fce7f3'], cdr:['CDR','#0e7490','#cffafe'],
+  // 图片 / 音视频
+  png:['IMG','#0e7490','#cffafe'], jpg:['IMG','#0e7490','#cffafe'], jpeg:['IMG','#0e7490','#cffafe'],
+  gif:['GIF','#0e7490','#cffafe'], webp:['IMG','#0e7490','#cffafe'], svg:['SVG','#0e7490','#cffafe'],
+  mp4:['MP4','#be123c','#ffe4e6'], mov:['MOV','#be123c','#ffe4e6'],
+  avi:['AVI','#be123c','#ffe4e6'], mkv:['MKV','#be123c','#ffe4e6'],
+  mp3:['MP3','#0f766e','#ccfbf1'], wav:['WAV','#0f766e','#ccfbf1'], flac:['FLAC','#0f766e','#ccfbf1'],
+  // 代码 / 字体 / 安装包
+  js:['JS','#4d7c0f','#ecfccb'], ts:['TS','#1d4ed8','#dbeafe'], py:['PY','#4d7c0f','#ecfccb'],
+  json:['JSON','#4d7c0f','#ecfccb'], html:['HTML','#c2410c','#ffedd5'], css:['CSS','#1d4ed8','#dbeafe'],
+  ttf:['FONT','#a16207','#fef9c3'], otf:['FONT','#a16207','#fef9c3'], woff:['FONT','#a16207','#fef9c3'],
+  woff2:['FONT','#a16207','#fef9c3'],
+  exe:['EXE','#475569','#e2e8f0'], dmg:['DMG','#475569','#e2e8f0'],
+  apk:['APK','#15803d','#dcfce7'], iso:['ISO','#475569','#e2e8f0']
+};
+const LINK_TYPE = ['LINK','#4f46e5','#eef2ff'];
+const DEF_TYPE  = ['FILE','#6b7280','#f1f3f7'];
+
+function fileType(url){
+  if(!url) return {label:'FILE', fg:DEF_TYPE[1], bg:DEF_TYPE[2]};
+  let s = String(url).split(/[?#]/)[0];
+  const name = s.split('/').pop() || '';
+  const dot = name.lastIndexOf('.');
+  const ext = dot > 0 ? name.slice(dot+1).toLowerCase() : '';
+  if(!ext || ext.length > 5) return {label:LINK_TYPE[0], fg:LINK_TYPE[1], bg:LINK_TYPE[2]};
+  const t = EXT_TYPES[ext];
+  if(t) return {label:t[0], fg:t[1], bg:t[2]};
+  return {label:ext.slice(0,4), fg:DEF_TYPE[1], bg:DEF_TYPE[2]};
+}
+function isImgIcon(s){ return /^(https?:\/\/|data:image|\.{0,2}\/)/i.test(String(s||'').trim()); }
+function iconHTML(i){
+  if(isImgIcon(i.icon)){
+    return '<div class="icon img"><img src="'+esc(i.icon)+'" alt="" loading="lazy" referrerpolicy="no-referrer" '+
+           'onerror="fallbackIcon(this,'+esc(JSON.stringify(i.title||''))+')"></div>';
+  }
+  if(i.icon) return '<div class="icon">' + esc(i.icon) + '</div>';
+  const t = fileType(i.url);
+  return '<div class="icon type" style="background:'+t.bg+';color:'+t.fg+'">' + esc(t.label) + '</div>';
+}
+function fallbackIcon(img, title){
+  const box = img.parentNode;
+  if(!box) return;
+  box.className = 'icon';
+  box.textContent = String(title||'?').trim().charAt(0).toUpperCase();
+}
+
+/* ============ 4. 渲染 ============ */
+/* 分区顺序：写死的排在前面（即使暂时没有资源也显示），数据里出现的新分类自动追加在后面 */
+const CATEGORY_ORDER = ['系统工具', '教学软件', '教学辅助', '其他工具', '图吧工具箱'];
+
+function render(){
+  const inData = Array.from(new Set(items.map(i=>i.category)));
+  const extra  = inData.filter(c=>CATEGORY_ORDER.indexOf(c) === -1);
+  const cats   = ['全部'].concat(CATEGORY_ORDER, extra);
+
+  const chipsHTML = cats.map(c=>{
+    const n = c==='全部' ? items.length : items.filter(i=>i.category===c).length;
+    return '<button class="chip'+(c===filterCat?' active':'')+(n===0?' zero':'')+'" data-cat="'+esc(c)+'">'+esc(c)+'<span class="count">'+n+'</span></button>';
+  }).join('');
+  $('#chips').innerHTML = chipsHTML;
+
+  const kw = keyword.trim().toLowerCase();
+  let list = items.filter(i=>{
+    if(filterCat!=='全部' && i.category!==filterCat) return false;
+    if(!kw) return true;
+    return (i.title+' '+i.desc+' '+i.category+' '+i.tags.join(' ')).toLowerCase().includes(kw);
+  });
+
+  const s = $('#sort').value;
+  list.sort((a,b)=>{
+    if(s==='name') return a.title.localeCompare(b.title,'zh');
+    if(s==='size') return parseSize(b.size)-parseSize(a.size);
+    if(s==='cat')  return a.category.localeCompare(b.category,'zh') || a.title.localeCompare(b.title,'zh');
+    return (b.date||'').localeCompare(a.date||'');
+  });
+
+  $('#grid').innerHTML = list.length ? list.map(cardHTML).join('') : emptyHTML();
+  bindCards();
+
+  $('#headCount').textContent = items.length;
+  $('#statTotal').textContent = items.length;
+  $('#statCat').textContent = new Set(items.map(i=>i.category)).size;
+}
+
+function cardHTML(i){
+  return '<article class="card" data-id="'+i.id+'">'+
+    '<div class="card-top">'+
+      iconHTML(i)+
+      '<div style="min-width:0">'+
+        '<div class="card-title" title="'+esc(i.detail || i.desc || i.title)+'">'+esc(i.title)+'</div>'+
+        '<div class="card-cat">'+esc(i.category)+(i.size?' · '+esc(i.size):'')+'</div>'+
+      '</div>'+
+    '</div>'+
+    (i.desc ? '<p class="card-desc">'+esc(i.desc)+'</p>' : '')+
+    (i.tags.length ? '<div class="tags">'+i.tags.map(t=>'<span class="tag">'+esc(t)+'</span>').join('')+'</div>' : '')+
+    moreHTML(i)+
+    '<div class="card-foot">'+
+      '<div class="meta"><span>'+esc(i.date||'')+'</span></div>'+
+      '<div class="card-actions">'+
+        '<a class="icon-btn" title="打开 / 下载" href="'+esc(i.url||'#')+'" target="_blank" rel="noopener">'+
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>'+
+        '</a>'+
+      '</div>'+
+    '</div>'+
+  '</article>';
+}
+
+function moreHTML(i){
+  const list = i.more || [];
+  if(!list.length) return '';
+  return '<details class="more"><summary>更多链接（'+list.length+'）</summary><div class="more-list">'+
+    list.map(m=>'<a href="'+esc(m.url)+'" target="_blank" rel="noopener" title="'+esc(m.note||m.label||'')+'">'+
+      '<span>'+esc(m.label||'链接')+'</span>'+(m.size?'<em>'+esc(m.size)+'</em>':'')+'</a>').join('')+
+  '</div></details>';
+}
+
+function emptyHTML(){
+  return '<div class="empty">'+
+    '<div class="e-icon">🗂️</div>'+
+    '<h3>'+(keyword ? '没找到匹配的资源' : (filterCat==='全部' ? '还没有任何资源' : '「'+esc(filterCat)+'」分区暂无资源'))+'</h3>'+
+    '<p>'+(keyword ? '换个关键词，或者切回「全部」分类看看' : '资源清单由站点维护者更新')+'</p>'+
+  '</div>';
+}
+
+function bindCards(){
+  document.querySelectorAll("#chips .chip").forEach(function(c){
+    c.onclick = function(){ filterCat = c.dataset.cat; render(); };
+  });
+}
+
+/* ============ 5. 事件绑定 ============ */
+$("#search").oninput = e=>{ keyword = e.target.value; render(); };
+$("#sort").onchange  = render;
+
+document.addEventListener("keydown", e=>{
+  if(e.key==="/" && document.activeElement.tagName!=="INPUT" && document.activeElement.tagName!=="TEXTAREA"){
+    e.preventDefault(); $("#search").focus();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
