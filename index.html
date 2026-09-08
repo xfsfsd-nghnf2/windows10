@@ -62,7 +62,8 @@
     content:"";position:absolute;top:-140px;right:-80px;width:420px;height:420px;border-radius:50%;
     background:radial-gradient(circle at 30% 30%,rgba(99,102,241,.16),rgba(139,92,246,.06) 60%,transparent 70%);
   }
-  .hero-inner{position:relative;}
+  .hero-inner{position:relative;display:flex;align-items:center;justify-content:space-between;gap:32px;}
+  .hero-left{min-width:0;}
   .hero h1{
     margin:0 0 10px;font-size:34px;line-height:1.25;font-weight:750;letter-spacing:-.4px;
   }
@@ -74,6 +75,30 @@
   .stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:26px;}
   .stat b{display:block;font-size:22px;font-weight:700;letter-spacing:-.2px;}
   .stat span{font-size:13px;color:var(--muted);}
+
+  /* ---------- 站长卡片 ---------- */
+  .webmaster{
+    flex-shrink:0;display:flex;align-items:center;gap:14px;
+    padding:16px 22px;border-radius:16px;
+    background:var(--surface);border:1px solid var(--border);
+    box-shadow:var(--shadow-lg);
+  }
+  .webmaster .avatar{
+    width:54px;height:54px;border-radius:50%;display:grid;place-items:center;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;
+    font-size:22px;font-weight:700;position:relative;flex-shrink:0;
+  }
+  .webmaster .avatar::after{
+    content:"";position:absolute;right:1px;bottom:1px;width:12px;height:12px;border-radius:50%;
+    background:#22c55e;border:2.5px solid var(--surface);
+  }
+  .webmaster .wm-info{display:grid;gap:3px;}
+  .webmaster .wm-name{font-size:15px;font-weight:700;display:flex;align-items:center;gap:7px;}
+  .webmaster .wm-badge{
+    font-size:11px;font-weight:600;color:var(--accent);
+    background:var(--accent-soft);padding:2px 8px;border-radius:999px;letter-spacing:.5px;
+  }
+  .webmaster .wm-desc{font-size:12.5px;color:var(--muted);}
 
   /* ---------- Toolbar ---------- */
   .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:26px 0 18px;}
@@ -193,6 +218,7 @@
   @media (max-width:640px){
     .hero{padding:36px 0 22px;}
     .hero h1{font-size:26px;}
+    .hero-inner{flex-direction:column;align-items:flex-start;gap:18px;}
     .container{padding:0 16px;}
     .row2{grid-template-columns:1fr;}
     .hide-sm{display:none;}
@@ -217,11 +243,20 @@
 <main data-page-node-id="gKAL36eh0OZoGIhLNxGdyP">
   <section class="hero" data-page-node-id="BI5EzCcX5ZFMacbonykwkc">
     <div class="container hero-inner" data-page-node-id="RgEO3KYyAX3OFWBmKS5LSq">
-      <h1 data-page-node-id="Ii9C3mcEWP5OfYeDlEathf">把好东西，<span data-page-node-id="BhYnxj7SDmLpI1tUvExIUy">收进一个地方</span></h1>
-      <p data-page-node-id="d5ZPj6Y8aCn1xHnFcFKmrm">装机必备、教学辅助、系统工具……统一归档，点开即下。</p>
-      <div class="stats" data-page-node-id="DlotfIVYzUNz2FD2UPwMhF">
-        <div class="stat" data-page-node-id="yrNHnQko4RfzE3pzb0a04d"><b id="statTotal" data-page-node-id="sFg37boFPtc8f80TCuGt8x">0</b><span data-page-node-id="IGaCu6fzB5Ki2ngtwLoHVH">资源总数</span></div>
-        <div class="stat" data-page-node-id="1Z9ZU3ZhUfvnZyiC2ggbDz"><b id="statCat" data-page-node-id="Nk3RPAWeKmJfZI87OSElaK">0</b><span data-page-node-id="WU0qUeKDmyoke7hwvQDYX5">资源分类</span></div>
+      <div class="hero-left">
+        <h1 data-page-node-id="Ii9C3mcEWP5OfYeDlEathf">把好东西，<span data-page-node-id="BhYnxj7SDmLpI1tUvExIUy">收进一个地方</span></h1>
+        <p data-page-node-id="d5ZPj6Y8aCn1xHnFcFKmrm">装机必备、教学辅助、系统工具……统一归档，点开即下。</p>
+        <div class="stats" data-page-node-id="DlotfIVYzUNz2FD2UPwMhF">
+          <div class="stat" data-page-node-id="yrNHnQko4RfzE3pzb0a04d"><b id="statTotal" data-page-node-id="sFg37boFPtc8f80TCuGt8x">0</b><span data-page-node-id="IGaCu6fzB5Ki2ngtwLoHVH">资源总数</span></div>
+          <div class="stat" data-page-node-id="1Z9ZU3ZhUfvnZyiC2ggbDz"><b id="statCat" data-page-node-id="Nk3RPAWeKmJfZI87OSElaK">0</b><span data-page-node-id="WU0qUeKDmyoke7hwvQDYX5">资源分类</span></div>
+        </div>
+      </div>
+      <div class="webmaster">
+        <div class="avatar">王</div>
+        <div class="wm-info">
+          <div class="wm-name">王景麟 <span class="wm-badge">WEBMASTER</span></div>
+          <div class="wm-desc">资源整理与维护 · 有问题找站长</div>
+        </div>
       </div>
     </div>
   </section>
